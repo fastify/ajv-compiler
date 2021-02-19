@@ -1,0 +1,33 @@
+{
+  "name": "ajv-compiler",
+  "version": "1.0.0",
+  "description": "Build and manage the AJV instances for the fastify framework",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "lint:fix": "standard --fix",
+    "test": "standard && tap test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/ajv-compiler.git"
+  },
+  "keywords": [],
+  "author": "Manuel Spigolon <behemoth89@gmail.com> (https://github.com/Eomm)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fastify/ajv-compiler/issues"
+  },
+  "homepage": "https://github.com/fastify/ajv-compiler#readme",
+  "devDependencies": {
+    "standard": "^16.0.3",
+    "tap": "^14.11.0"
+  },
+  "dependencies": {
+    "ajv": "^6.12.6"
+  }
+}
