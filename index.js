@@ -38,7 +38,11 @@ function ValidatorCompiler (externalSchemas, options, cache) {
 
   if (options.plugins && options.plugins.length > 0) {
     for (const plugin of options.plugins) {
-      plugin[0](ajv, plugin[1])
+      if (Array.isArray(plugin)) {
+        plugin[0](ajv, plugin[1])
+      } else {
+        plugin(ajv)
+      }
     }
   }
 
@@ -47,7 +51,7 @@ function ValidatorCompiler (externalSchemas, options, cache) {
     ajv.addSchema(extSchema)
   }
 
-  return function ({ schema, method, url, httpPart }) {
+  return function ({ schema/*, method, url, httpPart */ }) {
     return ajv.compile(schema)
   }
 }
