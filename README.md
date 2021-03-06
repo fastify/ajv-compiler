@@ -1,37 +1,25 @@
-# skeleton
+# ajv-compiler
 
-Template repository to create standardized Fastify plugins.
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+![Continuous Integration](https://github.com/fastify/ajv-compiler/workflows/Continuous%20Integration/badge.svg)
 
-# Getting started
+This module manage all the [`ajv`](https://www.npmjs.com/package/ajv) instances for the Fastify framework.
+It isolates the `ajv` dependancy to let you to choose the right schema compiler version for your application.
 
-- Click on `Use this template` above to create a new repository based on this repository.
 
-# What's include?
+## Version
 
-1. Github CI Actions for installing, testing your package.
-2. Github CI Actions to validate different package managers.
-3. Dependabot V2 config to automate dependency updates.
-4. Template for the GitHub App [Stale](https://github.com/apps/stale) to mark issues as stale. 
-5. Template for the GitHub App [tests-checker](https://github.com/apps/tests-checker) to check if a PR contains tests.
+| `@fastify/ajv-compiler` | `ajv` | Default in `fastify` |
+|------------------------:|------:|---------------------:|
+|                    v1.x |  v6.x |                ^3.14 |
 
-# Repository structure
 
-```
-├── .github
-│   ├── workflows
-│   │   ├── ci.yml
-│   │   └── package-manager-ci.yml
-│   ├── .stale.yml
-│   ├── dependabot.yml
-│   └── tests_checker.yml
-│
-├── docs (Documentation)
-│   
-├── examples (Code examples)
-│
-├── test (Application tests)
-│   
-├── types (Typescript types)
-│  
-└── README.md
-```
+## Usage
+
+This module is already used as default by Fastify.
+
+If you need to provide to your server instance a different version, refer to [the official doc](https://www.fastify.io/docs/latest/Server/#schemacontroller).
+
+## License
+
+Licensed under [MIT](./LICENSE).
