@@ -3,8 +3,9 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 ![Continuous Integration](https://github.com/fastify/ajv-compiler/workflows/Continuous%20Integration/badge.svg)
 
-This module manage all the [`ajv`](https://www.npmjs.com/package/ajv) instances for the Fastify framework.
-It isolates the `ajv` dependancy to let you to choose the right schema compiler version for your application.
+This module manages the [`ajv`](https://www.npmjs.com/package/ajv) instances for the Fastify framework.
+It isolates the `ajv` dependency so that the AJV version is not tightly coupled to the Fastify version.
+This allows the user to decide which version of AJV to use in their Fastify based application.
 
 
 ## Version
