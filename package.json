@@ -1,6 +1,6 @@
 {
   "name": "@fastify/ajv-compiler",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Build and manage the AJV instances for the fastify framework",
   "main": "index.js",
   "directories": {
