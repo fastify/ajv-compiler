@@ -82,14 +82,14 @@ t.test('optimization - cache ajv instance', t => {
   const compiler1 = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const compiler2 = factory(externalSchemas1, fastifyAjvOptionsDefault)
   t.equal(compiler1, compiler2, 'same instance')
-  t.sames(compiler1, compiler2, 'same instance')
+  t.same(compiler1, compiler2, 'same instance')
 
   const compiler3 = factory(externalSchemas2, fastifyAjvOptionsDefault)
-  t.notEqual(compiler3, compiler1, 'new ajv instance when externa schema change')
+  t.not(compiler3, compiler1, 'new ajv instance when externa schema change')
 
   const compiler4 = factory(externalSchemas1, fastifyAjvOptionsCustom)
-  t.notEqual(compiler4, compiler1, 'new ajv instance when externa schema change')
-  t.notEqual(compiler4, compiler3, 'new ajv instance when externa schema change')
+  t.not(compiler4, compiler1, 'new ajv instance when externa schema change')
+  t.not(compiler4, compiler3, 'new ajv instance when externa schema change')
 })
 
 // https://github.com/fastify/fastify/pull/2969
