@@ -9,10 +9,6 @@ on:
       - "docs/**"
       - "*.md"
 
-env:
-  CI: true
-  COVERALLS: 0
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -40,23 +36,3 @@ jobs:
       - name: Tests
         id: test
         run: npm run test
-
-      - name: Coveralls Parallel
-        id: coveralls
-        uses: coverallsapp/github-action@master
-        if: env.COVERALLS == 1
-        with:
-          github-token: ${{ secrets.github_token }}
-          parallel: true
-
-  coverage:
-    needs: build
-    runs-on: ubuntu-latest
-    if: env.COVERALLS == 1
-    steps:
-      - name: Coveralls Finished
-        id: send_coveralls_report
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
