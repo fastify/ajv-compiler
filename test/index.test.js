@@ -43,7 +43,7 @@ t.test('basic usage', t => {
   const compiler = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const validatorFunc = compiler({ schema: sampleSchema })
   const result = validatorFunc({ name: 'hello' })
-  t.equals(result, true)
+  t.equal(result, true)
 })
 
 t.test('plugin loading', t => {
@@ -69,11 +69,11 @@ t.test('plugin loading', t => {
     }
   })
   const result = validatorFunc({ q: 'hello' })
-  t.equals(result, true)
+  t.equal(result, true)
 
   const resultFail = validatorFunc({ })
-  t.equals(resultFail, false)
-  t.equals(validatorFunc.errors[0].message, 'hello world')
+  t.equal(resultFail, false)
+  t.equal(validatorFunc.errors[0].message, 'hello world')
 })
 
 t.test('optimization - cache ajv instance', t => {
@@ -81,15 +81,15 @@ t.test('optimization - cache ajv instance', t => {
   const factory = AjvCompiler()
   const compiler1 = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const compiler2 = factory(externalSchemas1, fastifyAjvOptionsDefault)
-  t.equals(compiler1, compiler2, 'same instance')
-  t.deepEquals(compiler1, compiler2, 'same instance')
+  t.equal(compiler1, compiler2, 'same instance')
+  t.same(compiler1, compiler2, 'same instance')
 
   const compiler3 = factory(externalSchemas2, fastifyAjvOptionsDefault)
-  t.notEqual(compiler3, compiler1, 'new ajv instance when externa schema change')
+  t.not(compiler3, compiler1, 'new ajv instance when externa schema change')
 
   const compiler4 = factory(externalSchemas1, fastifyAjvOptionsCustom)
-  t.notEqual(compiler4, compiler1, 'new ajv instance when externa schema change')
-  t.notEqual(compiler4, compiler3, 'new ajv instance when externa schema change')
+  t.not(compiler4, compiler1, 'new ajv instance when externa schema change')
+  t.not(compiler4, compiler3, 'new ajv instance when externa schema change')
 })
 
 // https://github.com/fastify/fastify/pull/2969
