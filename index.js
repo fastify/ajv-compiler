@@ -1,11 +1,9 @@
 'use strict'
 
-const Ajv = require('ajv')
+const Ajv = require('ajv').default
 
 function ValidatorSelector () {
   const validatorPool = new Map()
-  const cache = new Map()
-  cache.put = cache.set
 
   return function buildCompilerFromPool (externalSchemas, options) {
     const externals = JSON.stringify(externalSchemas)
@@ -16,14 +14,14 @@ function ValidatorSelector () {
       return validatorPool.get(uniqueAjvKey)
     }
 
-    const compiler = ValidatorCompiler(externalSchemas, options, cache)
+    const compiler = ValidatorCompiler(externalSchemas, options)
     validatorPool.set(uniqueAjvKey, compiler)
 
     return compiler
   }
 }
 
-function ValidatorCompiler (externalSchemas, options, cache) {
+function ValidatorCompiler (externalSchemas, options) {
   // This instance of Ajv is private
   // it should not be customized or used
   const ajv = new Ajv(Object.assign({
@@ -32,9 +30,8 @@ function ValidatorCompiler (externalSchemas, options, cache) {
     removeAdditional: true,
     // Explicitly set allErrors to `false`.
     // When set to `true`, a DoS attack is possible.
-    allErrors: false,
-    nullable: true
-  }, options.customOptions, { cache }))
+    allErrors: false
+  }, options.customOptions))
 
   if (options.plugins && options.plugins.length > 0) {
     for (const plugin of options.plugins) {
