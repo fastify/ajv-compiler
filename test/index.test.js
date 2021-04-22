@@ -88,3 +88,49 @@ t.test('optimization - cache ajv instance', t => {
   t.not(compiler4, compiler1, 'new ajv instance when externa schema change')
   t.not(compiler4, compiler3, 'new ajv instance when externa schema change')
 })
+
+// https://github.com/fastify/fastify/pull/2969
+t.test('compile same $id when in external schema', t => {
+  t.plan(2)
+  const factory = AjvCompiler()
+
+  const base = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const compiler = factory({
+    [base.$id]: base,
+    [refSchema.$id]: refSchema
+
+  }, fastifyAjvOptionsDefault)
+
+  const validatorFunc1 = compiler({
+    schema: {
+      $id: 'urn:schema:ref'
+    }
+  })
+
+  const validatorFunc2 = compiler({
+    schema: {
+      $id: 'urn:schema:ref'
+    }
+  })
+
+  t.pass('the compile does not fail if the schema compiled is already in the external schemas')
+  t.equal(validatorFunc1, validatorFunc2, 'the returned function is the same')
+})
