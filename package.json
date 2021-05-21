@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "Build and manage the AJV instances for the fastify framework",
   "main": "index.js",
+  "types": "index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "lint:fix": "standard --fix",
-    "test": "standard && tap --100 test/**/*.test.js"
+    "unit": "tap --100 test/**/*.test.js",
+    "test": "standard && npm run unit && npm run test:typescript",
+    "test:typescript": "tsd"
   },
   "repository": {
     "type": "git",
@@ -31,9 +34,13 @@
     "ajv-errors": "^1.0.1",
     "ajv-merge-patch": "^4.1.0",
     "standard": "^16.0.3",
-    "tap": "^15.0.1"
+    "tap": "^15.0.1",
+    "tsd": "^0.14.0"
   },
   "dependencies": {
     "ajv": "^6.12.6"
+  },
+  "tsd": {
+    "directory": "test/types"
   }
 }
