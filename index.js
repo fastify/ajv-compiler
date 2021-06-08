@@ -14,52 +14,57 @@ function ValidatorSelector () {
       return validatorPool.get(uniqueAjvKey)
     }
 
-    const compiler = ValidatorCompiler(externalSchemas, options)
-    validatorPool.set(uniqueAjvKey, compiler)
+    const compiler = new ValidatorCompiler(externalSchemas, options)
+    const ret = compiler.buildValidatorFunction.bind(compiler)
+    validatorPool.set(uniqueAjvKey, ret)
 
-    return compiler
+    ret[Symbol.for('fastify.ajv-compiler.reference')] = compiler
+
+    return ret
   }
 }
 
-function ValidatorCompiler (externalSchemas, options) {
-  // This instance of Ajv is private
-  // it should not be customized or used
-  const ajv = new Ajv(Object.assign({
-    coerceTypes: true,
-    useDefaults: true,
-    removeAdditional: true,
-    // Explicitly set allErrors to `false`.
-    // When set to `true`, a DoS attack is possible.
-    allErrors: false
-  }, options.customOptions))
+class ValidatorCompiler {
+  constructor (externalSchemas, options) {
+    // This instance of Ajv is private
+    // it should not be customized or used
+    this.ajv = new Ajv(Object.assign({
+      coerceTypes: true,
+      useDefaults: true,
+      removeAdditional: true,
+      // Explicitly set allErrors to `false`.
+      // When set to `true`, a DoS attack is possible.
+      allErrors: false
+    }, options.customOptions))
 
-  if (options.plugins && options.plugins.length > 0) {
-    for (const plugin of options.plugins) {
-      if (Array.isArray(plugin)) {
-        plugin[0](ajv, plugin[1])
-      } else {
-        plugin(ajv)
+    if (options.plugins && options.plugins.length > 0) {
+      for (const plugin of options.plugins) {
+        if (Array.isArray(plugin)) {
+          plugin[0](this.ajv, plugin[1])
+        } else {
+          plugin(this.ajv)
+        }
       }
+    }
+
+    const sourceSchemas = Object.values(externalSchemas)
+    for (const extSchema of sourceSchemas) {
+      this.ajv.addSchema(extSchema)
     }
   }
 
-  const sourceSchemas = Object.values(externalSchemas)
-  for (const extSchema of sourceSchemas) {
-    ajv.addSchema(extSchema)
-  }
-
-  return function ({ schema/*, method, url, httpPart */ }) {
+  buildValidatorFunction ({ schema/*, method, url, httpPart */ }) {
     // Ajv does not support compiling two schemas with the same
     // id inside the same instance. Therefore if we have already
     // compiled the schema with the given id, we just return it.
     if (schema.$id) {
-      const stored = ajv.getSchema(schema.$id)
+      const stored = this.ajv.getSchema(schema.$id)
       if (stored) {
         return stored
       }
     }
 
-    return ajv.compile(schema)
+    return this.ajv.compile(schema)
   }
 }
 
