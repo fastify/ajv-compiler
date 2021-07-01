@@ -30,9 +30,6 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install --ignore-scripts
-      - name: Lint
-        run: |
-          npm run lint
       - name: Run Tests
         run: |
           npm test
