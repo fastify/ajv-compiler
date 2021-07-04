@@ -1,6 +1,9 @@
 'use strict'
 
+const fs = require('fs')
+const path = require('path')
 const t = require('tap')
+const standaloneCode = require('ajv/dist/standalone').default
 const AjvCompiler = require('../index')
 
 const sampleSchema = Object.freeze({
@@ -32,7 +35,7 @@ const fastifyAjvOptionsCustom = Object.freeze({
     removeAdditional: false
   },
   plugins: [
-    require('ajv-merge-patch'),
+    require('ajv-formats'),
     [require('ajv-errors'), { singleError: false }]
   ]
 })
@@ -52,26 +55,23 @@ t.test('plugin loading', t => {
   const compiler = factory(externalSchemas1, fastifyAjvOptionsCustom)
   const validatorFunc = compiler({
     schema: {
-      $merge: {
-        source: {
-          type: 'object',
-          properties: {
-            q: {
-              type: 'string'
-            }
-          },
-          errorMessage: 'hello world'
-        },
-        with: {
-          required: ['q']
+      type: 'object',
+      properties: {
+        q: {
+          type: 'string',
+          format: 'date',
+          formatMinimum: '2016-02-06',
+          formatExclusiveMaximum: '2016-12-27'
         }
-      }
+      },
+      required: ['q'],
+      errorMessage: 'hello world'
     }
   })
-  const result = validatorFunc({ q: 'hello' })
+  const result = validatorFunc({ q: '2016-10-02' })
   t.equal(result, true)
 
-  const resultFail = validatorFunc({ })
+  const resultFail = validatorFunc({})
   t.equal(resultFail, false)
   t.equal(validatorFunc.errors[0].message, 'hello world')
 })
@@ -136,4 +136,58 @@ t.test('compile same $id when in external schema', t => {
 
   t.pass('the compile does not fail if the schema compiled is already in the external schemas')
   t.equal(validatorFunc1, validatorFunc2, 'the returned function is the same')
+})
+
+t.test('generate standalone code', t => {
+  t.plan(2)
+
+  const factory = AjvCompiler()
+
+  const base = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const compiler = factory({
+    [base.$id]: base,
+    [refSchema.$id]: refSchema
+
+  }, {
+    customOptions: {
+      code: { source: true }
+    }
+  })
+
+  compiler({
+    schema: {
+      $id: 'urn:schema:ref'
+    }
+  })
+
+  const sym = Symbol.for('fastify.ajv-compiler.reference')
+  t.ok(compiler[sym], 'the ajv reference exists')
+
+  const moduleCode = standaloneCode(compiler[sym].ajv)
+  fs.writeFileSync(path.join(__dirname, '/validate.js'), moduleCode)
+
+  t.test('usage standalone code', t => {
+    t.plan(1)
+    const standaloneValidate = require('./validate')
+    // TODO usage
+    t.ok(standaloneValidate)
+  })
 })
