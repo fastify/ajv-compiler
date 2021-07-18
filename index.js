@@ -18,7 +18,9 @@ function ValidatorSelector () {
     const ret = compiler.buildValidatorFunction.bind(compiler)
     validatorPool.set(uniqueAjvKey, ret)
 
-    ret[Symbol.for('fastify.ajv-compiler.reference')] = compiler
+    if (options.customOptions.code !== undefined) {
+      ret[Symbol.for('fastify.ajv-compiler.reference')] = compiler
+    }
 
     return ret
   }
