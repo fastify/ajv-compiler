@@ -1,6 +1,27 @@
 'use strict'
 
+// TODO should we require only when needed?
 const Ajv = require('ajv').default
+const AjvJTD = require('ajv/dist/jtd')
+
+const defaultAjvOptions = {
+  coerceTypes: true,
+  useDefaults: true,
+  removeAdditional: true,
+  // Explicitly set allErrors to `false`.
+  // When set to `true`, a DoS attack is possible.
+  allErrors: false
+}
+
+// TODO does it worth splitting the defaults?
+const defaultJtdOptions = {
+  coerceTypes: true,
+  useDefaults: true,
+  removeAdditional: true,
+  // Explicitly set allErrors to `false`.
+  // When set to `true`, a DoS attack is possible.
+  allErrors: false
+}
 
 function ValidatorSelector () {
   const validatorPool = new Map()
@@ -30,14 +51,11 @@ class ValidatorCompiler {
   constructor (externalSchemas, options) {
     // This instance of Ajv is private
     // it should not be customized or used
-    this.ajv = new Ajv(Object.assign({
-      coerceTypes: true,
-      useDefaults: true,
-      removeAdditional: true,
-      // Explicitly set allErrors to `false`.
-      // When set to `true`, a DoS attack is possible.
-      allErrors: false
-    }, options.customOptions))
+    if (options.mode === 'JTD') {
+      this.ajv = new AjvJTD(Object.assign({}, defaultJtdOptions, options.customOptions))
+    } else {
+      this.ajv = new Ajv(Object.assign({}, defaultAjvOptions, options.customOptions))
+    }
 
     if (options.plugins && options.plugins.length > 0) {
       for (const plugin of options.plugins) {

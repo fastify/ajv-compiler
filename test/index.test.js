@@ -31,6 +31,11 @@ const fastifyAjvOptionsDefault = Object.freeze({
   customOptions: {}
 })
 
+const fastifyJtdDefault = Object.freeze({
+  customOptions: { },
+  mode: 'JTD'
+})
+
 const fastifyAjvOptionsCustom = Object.freeze({
   customOptions: {
     allErrors: true,
@@ -142,6 +147,48 @@ t.test('compile same $id when in external schema', t => {
   t.equal(validatorFunc1, validatorFunc2, 'the returned function is the same')
 })
 
+t.test('JTD MODE', t => {
+  t.plan(1)
+
+  t.test('compile jtd schema', t => {
+    t.plan(4)
+    const factory = AjvCompiler()
+
+    const jtdSchema = {
+      discriminator: 'version',
+      mapping: {
+        1: {
+          properties: {
+            foo: { type: 'uint8' }
+          }
+        },
+        2: {
+          properties: {
+            foo: { type: 'string' }
+          }
+        }
+      }
+    }
+
+    const compiler = factory({}, fastifyJtdDefault)
+    const validatorFunc = compiler({ schema: jtdSchema })
+    t.pass('generated validation function for JTD SCHEMA')
+
+    const result = validatorFunc({
+      version: '2',
+      foo: []
+    })
+    t.notOk(result, 'failed validation')
+    t.type(validatorFunc.errors, 'Array')
+
+    const success = validatorFunc({
+      version: '1',
+      foo: 42
+    })
+    t.ok(success)
+  })
+})
+
 t.test('STANDALONE MODE', t => {
   t.plan(1)
 
@@ -196,7 +243,7 @@ t.test('STANDALONE MODE', t => {
     t.test('usage standalone code', t => {
       t.plan(1)
       const standaloneValidate = require('./validate')
-      // TODO usage
+      // TODO how can we load the validation functions without referring to AJV?
 
       // const requireFromString = require("require-from-string")
       // const standaloneValidate = requireFromString(moduleCode) // for a single default export
