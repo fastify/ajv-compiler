@@ -16,10 +16,10 @@ t.test('errors', t => {
   t.plan(2)
   t.throws(() => {
     AjvStandaloneCompiler()
-  }, 'missing restoreValidation')
+  }, 'missing restoreFunction')
   t.throws(() => {
     AjvStandaloneCompiler({ readMode: false })
-  }, 'missing storeValidation')
+  }, 'missing storeFunction')
 })
 
 t.test('generate standalone code', t => {
@@ -58,7 +58,7 @@ t.test('generate standalone code', t => {
 
   const factory = AjvStandaloneCompiler({
     readMode: false,
-    storeValidation (routeOpts, schemaValidationCode) {
+    storeFunction (routeOpts, schemaValidationCode) {
       t.same(routeOpts, endpointSchema)
       t.type(schemaValidationCode, 'string')
       fs.writeFileSync(path.join(__dirname, '/ajv-generated.js'), schemaValidationCode)
@@ -89,13 +89,13 @@ t.test('fastify integration - writeMode', async t => {
 
   const factory = AjvStandaloneCompiler({
     readMode: false,
-    storeValidation (routeOpts, schemaValidationCode) {
+    storeFunction (routeOpts, schemaValidationCode) {
       const fileName = generateFileName(routeOpts)
       t.ok(routeOpts)
       fs.writeFileSync(path.join(__dirname, fileName), schemaValidationCode)
       t.pass('stored the validation function')
     },
-    restoreValidation () {
+    restoreFunction () {
       t.fail('write mode ON')
     }
   })
@@ -109,10 +109,10 @@ t.test('fastify integration - readMode', async t => {
 
   const factory = AjvStandaloneCompiler({
     readMode: true,
-    storeValidation () {
+    storeFunction () {
       t.fail('read mode ON')
     },
-    restoreValidation (routeOpts) {
+    restoreFunction (routeOpts) {
       t.pass('restore the validation function')
       const fileName = generateFileName(routeOpts)
       return require(path.join(__dirname, fileName))

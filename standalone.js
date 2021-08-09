@@ -4,12 +4,12 @@ const ValidatorSelector = require('./index')
 const standaloneCode = require('ajv/dist/standalone').default
 
 function StandaloneValidator (options = { readMode: true }) {
-  if (options.readMode === true && !options.restoreValidation) {
-    throw new Error('You must provide a restoreValidation options when readMode ON')
+  if (options.readMode === true && !options.restoreFunction) {
+    throw new Error('You must provide a restoreFunction options when readMode ON')
   }
 
-  if (options.readMode !== true && !options.storeValidation) {
-    throw new Error('You must provide a storeValidation options when readMode OFF')
+  if (options.readMode !== true && !options.storeFunction) {
+    throw new Error('You must provide a storeFunction options when readMode OFF')
   }
 
   if (options.readMode === true) {
@@ -17,7 +17,7 @@ function StandaloneValidator (options = { readMode: true }) {
     // READ MODE: it behalf only in the restore function provided by the user
     return function wrapper () {
       return function (opts) {
-        return options.restoreValidation(opts)
+        return options.restoreFunction(opts)
       }
     }
   }
@@ -36,7 +36,7 @@ function StandaloneValidator (options = { readMode: true }) {
       const validationFunc = compiler(opts)
 
       const schemaValidationCode = standaloneCode(compiler[ValidatorSelector.AjvReference].ajv, validationFunc)
-      options.storeValidation(opts, schemaValidationCode)
+      options.storeFunction(opts, schemaValidationCode)
 
       return validationFunc
     }
