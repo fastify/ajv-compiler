@@ -1,10 +1,7 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
 const t = require('tap')
 const fastify = require('fastify')
-const standaloneCode = require('ajv/dist/standalone').default
 const AjvCompiler = require('../index')
 
 const sym = Symbol.for('fastify.ajv-compiler.reference')
@@ -236,69 +233,5 @@ t.test('JTD MODE', t => {
 
     t.equal(res.statusCode, 400)
     t.equal(res.json().message, 'body must be uint8')
-  })
-})
-
-t.test('STANDALONE MODE', t => {
-  t.plan(1)
-
-  t.test('generate standalone code', t => {
-    t.plan(3)
-
-    const factory = AjvCompiler()
-
-    const base = {
-      $id: 'urn:schema:base',
-      definitions: {
-        hello: { type: 'string' }
-      },
-      type: 'object',
-      properties: {
-        hello: { $ref: '#/definitions/hello' }
-      }
-    }
-
-    const refSchema = {
-      $id: 'urn:schema:ref',
-      type: 'object',
-      properties: {
-        hello: { $ref: 'urn:schema:base#/definitions/hello' }
-      }
-    }
-
-    const endpointSchema = {
-      schema: {
-        $id: 'urn:schema:endpoint',
-        $ref: 'urn:schema:ref'
-      }
-    }
-
-    const compiler = factory({
-      [base.$id]: base,
-      [refSchema.$id]: refSchema
-    }, {
-      customOptions: {
-        code: { source: true }
-      }
-    })
-
-    const theValidatorFunction = compiler(endpointSchema)
-    t.pass('compiled the endpoint schema')
-    t.ok(compiler[sym], 'the ajv reference exists')
-
-    // const schemaValidationCode = standaloneCode(compiler[sym].ajv) // generates a json map
-    const schemaValidationCode = standaloneCode(compiler[sym].ajv, theValidatorFunction) // generates a single function
-    fs.writeFileSync(path.join(__dirname, '/validate.js'), schemaValidationCode)
-
-    t.test('usage standalone code', t => {
-      t.plan(1)
-      const standaloneValidate = require('./validate')
-      // TODO how can we load the validation functions without referring to AJV?
-
-      // const requireFromString = require('require-from-string')
-      // const standaloneValidate = requireFromString(moduleCode) // for a single default export
-
-      t.ok(standaloneValidate)
-    })
   })
 })

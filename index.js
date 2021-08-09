@@ -3,6 +3,8 @@
 const Ajv = require('ajv').default
 const AjvJTD = require('ajv/dist/jtd')
 
+const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
+
 const defaultAjvOptions = {
   coerceTypes: true,
   useDefaults: true,
@@ -29,7 +31,7 @@ function ValidatorSelector () {
     validatorPool.set(uniqueAjvKey, ret)
 
     if (options.customOptions.code !== undefined) {
-      ret[Symbol.for('fastify.ajv-compiler.reference')] = compiler
+      ret[AjvReference] = compiler
     }
 
     return ret
@@ -78,3 +80,4 @@ class ValidatorCompiler {
 }
 
 module.exports = ValidatorSelector
+module.exports.AjvReference = AjvReference
