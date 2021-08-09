@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const t = require('tap')
+const fastify = require('fastify')
 const standaloneCode = require('ajv/dist/standalone').default
 const AjvCompiler = require('../index')
 
@@ -148,7 +149,7 @@ t.test('compile same $id when in external schema', t => {
 })
 
 t.test('JTD MODE', t => {
-  t.plan(1)
+  t.plan(2)
 
   t.test('compile jtd schema', t => {
     t.plan(4)
@@ -186,6 +187,55 @@ t.test('JTD MODE', t => {
       foo: 42
     })
     t.ok(success)
+  })
+
+  t.test('fastify integration', async t => {
+    const factory = AjvCompiler()
+
+    const app = fastify({
+      jsonShorthand: false,
+      ajv: {
+        customOptions: { },
+        mode: 'JTD'
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: factory
+        }
+      }
+    })
+
+    app.post('/', {
+      schema: {
+        body: {
+          discriminator: 'version',
+          mapping: {
+            1: {
+              properties: {
+                foo: { type: 'uint8' }
+              }
+            },
+            2: {
+              properties: {
+                foo: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }, () => {})
+
+    const res = await app.inject({
+      url: '/',
+      method: 'POST',
+      payload: {
+        version: '1',
+        foo: 'this is not a number'
+      }
+    })
+
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'body must be uint8')
   })
 })
 
@@ -236,7 +286,7 @@ t.test('STANDALONE MODE', t => {
     t.pass('compiled the endpoint schema')
     t.ok(compiler[sym], 'the ajv reference exists')
 
-    // const schemaValidationCode = standaloneCode(compiler[sym].ajv) //generates a json map
+    // const schemaValidationCode = standaloneCode(compiler[sym].ajv) // generates a json map
     const schemaValidationCode = standaloneCode(compiler[sym].ajv, theValidatorFunction) // generates a single function
     fs.writeFileSync(path.join(__dirname, '/validate.js'), schemaValidationCode)
 
@@ -245,7 +295,7 @@ t.test('STANDALONE MODE', t => {
       const standaloneValidate = require('./validate')
       // TODO how can we load the validation functions without referring to AJV?
 
-      // const requireFromString = require("require-from-string")
+      // const requireFromString = require('require-from-string')
       // const standaloneValidate = requireFromString(moduleCode) // for a single default export
 
       t.ok(standaloneValidate)

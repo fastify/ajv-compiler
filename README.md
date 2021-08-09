@@ -13,6 +13,7 @@ This allows the user to decide which version of AJV to use in their Fastify base
 | `@fastify/ajv-compiler` | `ajv` | Default in `fastify` |
 |------------------------:|------:|---------------------:|
 |                    v1.x |  v6.x |                ^3.14 |
+|                    v2.x |  v8.x |                  TBD |
 
 
 ### AJV Configuration
@@ -38,6 +39,48 @@ To customize them, see how in the [Fastify official docs](https://www.fastify.io
 
 This module is already used as default by Fastify. 
 If you need to provide to your server instance a different version, refer to [the official doc](https://www.fastify.io/docs/latest/Server/#schemacontroller).
+
+### Fastify with JTD
+
+The [JSON Type Definition](https://jsontypedef.com/) feature is supported by AJV v8.x and you can benefit from it in your Fastify application.
+
+With Fastify v3.20.x and higher, you can use the `@fastify/ajv-compiler` module to load JSON Type Definitions like so:
+
+```js
+const factory = require('@fastify/ajv-compiler')()
+
+const app = fastify({
+  jsonShorthand: false,
+  ajv: {
+    customOptions: { }, // additional JTD options
+    mode: 'JTD'
+  },
+  schemaController: {
+    compilersFactory: {
+      buildValidator: factory
+    }
+  }
+})
+```
+
+The defaults AJV JTD options are the same as the [Fastify's default options](#AJV-Configuration).
+
+### AJV Standalone
+
+AJV v8 introduces the [standalone feature](https://ajv.js.org/standalone.html) that let you to pre-compile your schemas and use them in your application
+for a faster cold start.
+
+To use this feature, you must be aware of the following:
+
+1. You must generate and save the compiled schemas to a file using [AJV](https://ajv.js.org/standalone.html#usage-with-cli).
+2. Read the compiled schemas from the file and provide them to your Fastify application.
+
+#### Generate and save the compiled schemas
+
+To accomplish this, you must do the following:
+
+```js
+```
 
 ### How it works
 

@@ -36,6 +36,8 @@
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.0.2",
     "ajv-merge-patch": "^4.1.0",
+    "fastify": "^3.20.1",
+    "require-from-string": "^2.0.2",
     "standard": "^16.0.3",
     "tap": "^15.0.1",
     "tsd": "^0.14.0"
