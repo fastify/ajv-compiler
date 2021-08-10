@@ -13,7 +13,7 @@ function StandaloneValidator (options = { readMode: true }) {
   }
 
   if (options.readMode === true) {
-    /*************/
+    
     // READ MODE: it behalf only in the restore function provided by the user
     return function wrapper () {
       return function (opts) {
@@ -22,7 +22,6 @@ function StandaloneValidator (options = { readMode: true }) {
     }
   }
 
-  /*************/
   // WRITE MODE: it behalf on the default ValidatorSelector, wrapping the API to run the Ajv Standalone code generation
   const factory = ValidatorSelector()
   return function wrapper (externalSchemas, ajvOptions = {}) {
