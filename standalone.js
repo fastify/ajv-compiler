@@ -13,7 +13,6 @@ function StandaloneValidator (options = { readMode: true }) {
   }
 
   if (options.readMode === true) {
-    
     // READ MODE: it behalf only in the restore function provided by the user
     return function wrapper () {
       return function (opts) {
