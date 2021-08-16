@@ -4,7 +4,10 @@ const t = require('tap')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
 
-t.test('Baseline test', async (t) => {
+const ajvFormats = require('ajv-formats')
+const ajvErrors = require('ajv-errors')
+
+t.test('Format Baseline test', async (t) => {
   const app = buildApplication({
     customOptions: {
       validateFormats: false
@@ -32,10 +35,9 @@ t.test('Format test', (t) => {
   t.plan(6)
   const app = buildApplication({
     customOptions: {
-      validateFormats: true,
-      allErrors: true
+      validateFormats: true
     },
-    plugins: [require('ajv-formats')]
+    plugins: [ajvFormats]
   })
 
   app.inject('/hello', (err, res) => {
@@ -63,6 +65,70 @@ t.test('Format test', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
+  })
+})
+
+t.test('Custom error messages', (t) => {
+  t.plan(9)
+
+  const app = buildApplication({
+    customOptions: {
+      removeAdditional: false,
+      allErrors: true
+    },
+    plugins: [ajvFormats, ajvErrors]
+  })
+
+  const errorMessage = {
+    required: 'custom miss',
+    type: 'custom type', // will not replace internal "type" error for the property "foo"
+    _: 'custom type', // this prop will do it
+    additionalProperties: 'custom too many params'
+  }
+
+  app.post('/', {
+    handler: () => { t.fail('dont call me') },
+    schema: {
+      body: {
+        type: 'object',
+        required: ['foo'],
+        properties: {
+          foo: { type: 'integer' }
+        },
+        additionalProperties: false,
+        errorMessage
+      }
+    }
+  })
+
+  app.inject({
+    url: '/',
+    method: 'post',
+    payload: {}
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.match(res.json().message, errorMessage.required)
+  })
+
+  app.inject({
+    url: '/',
+    method: 'post',
+    payload: { foo: 'not a number' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.match(res.json().message, errorMessage.type)
+  })
+
+  app.inject({
+    url: '/',
+    method: 'post',
+    payload: { foo: 3, bar: 'ops' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.match(res.json().message, errorMessage.additionalProperties)
   })
 })
 
