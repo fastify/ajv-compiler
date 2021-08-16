@@ -35,6 +35,7 @@
     "ajv-cli": "^5.0.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.0",
+    "ajv-i18n": "^4.0.1",
     "ajv-merge-patch": "^4.1.0",
     "fastify": "^3.20.1",
     "require-from-string": "^2.0.2",
