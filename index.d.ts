@@ -1,13 +1,12 @@
-import { Ajv, Options } from "ajv";
+import { default as _ajv, Options } from "ajv";
 
 export type ValidatorCompiler = (
   externalSchemas: unknown,
-  options: Options,
-  cache: Options["cache"]
+  options: Options
 ) => Ajv;
 
 export declare function ValidatorSelector(): ValidatorCompiler;
 
-export type { Ajv, Options } from "ajv";
-
+export type { Options } from "ajv";
+export type Ajv = _ajv;
 export default ValidatorSelector;

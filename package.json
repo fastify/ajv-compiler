@@ -11,7 +11,8 @@
     "lint:fix": "standard --fix",
     "unit": "tap --100 test/**/*.test.js",
     "test": "standard && npm run unit && npm run test:typescript",
-    "test:typescript": "tsd"
+    "test:typescript": "tsd",
+    "ajv:compile": "ajv compile -s test/source.json -o test/validate_schema.js"
   },
   "repository": {
     "type": "git",
@@ -31,14 +32,20 @@
   },
   "homepage": "https://github.com/fastify/ajv-compiler#readme",
   "devDependencies": {
-    "ajv-errors": "^1.0.1",
+    "ajv-cli": "^5.0.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.0",
+    "ajv-i18n": "^4.0.1",
     "ajv-merge-patch": "^4.1.0",
+    "fastify": "^3.20.1",
+    "require-from-string": "^2.0.2",
+    "sanitize-filename": "^1.6.3",
     "standard": "^16.0.3",
-    "tap": "^15.0.1",
+    "tap": "^15.0.9",
     "tsd": "^0.14.0"
   },
   "dependencies": {
-    "ajv": "^6.12.6"
+    "ajv": "^8.6.2"
   },
   "tsd": {
     "directory": "test/types"

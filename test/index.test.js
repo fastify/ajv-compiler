@@ -1,7 +1,10 @@
 'use strict'
 
 const t = require('tap')
+const fastify = require('fastify')
 const AjvCompiler = require('../index')
+
+const sym = Symbol.for('fastify.ajv-compiler.reference')
 
 const sampleSchema = Object.freeze({
   $id: 'example1',
@@ -26,13 +29,18 @@ const fastifyAjvOptionsDefault = Object.freeze({
   customOptions: {}
 })
 
+const fastifyJtdDefault = Object.freeze({
+  customOptions: { },
+  mode: 'JTD'
+})
+
 const fastifyAjvOptionsCustom = Object.freeze({
   customOptions: {
     allErrors: true,
     removeAdditional: false
   },
   plugins: [
-    require('ajv-merge-patch'),
+    require('ajv-formats'),
     [require('ajv-errors'), { singleError: false }]
   ]
 })
@@ -52,26 +60,23 @@ t.test('plugin loading', t => {
   const compiler = factory(externalSchemas1, fastifyAjvOptionsCustom)
   const validatorFunc = compiler({
     schema: {
-      $merge: {
-        source: {
-          type: 'object',
-          properties: {
-            q: {
-              type: 'string'
-            }
-          },
-          errorMessage: 'hello world'
-        },
-        with: {
-          required: ['q']
+      type: 'object',
+      properties: {
+        q: {
+          type: 'string',
+          format: 'date',
+          formatMinimum: '2016-02-06',
+          formatExclusiveMaximum: '2016-12-27'
         }
-      }
+      },
+      required: ['q'],
+      errorMessage: 'hello world'
     }
   })
-  const result = validatorFunc({ q: 'hello' })
+  const result = validatorFunc({ q: '2016-10-02' })
   t.equal(result, true)
 
-  const resultFail = validatorFunc({ })
+  const resultFail = validatorFunc({})
   t.equal(resultFail, false)
   t.equal(validatorFunc.errors[0].message, 'hello world')
 })
@@ -94,7 +99,7 @@ t.test('optimization - cache ajv instance', t => {
 
 // https://github.com/fastify/fastify/pull/2969
 t.test('compile same $id when in external schema', t => {
-  t.plan(2)
+  t.plan(3)
   const factory = AjvCompiler()
 
   const base = {
@@ -122,6 +127,8 @@ t.test('compile same $id when in external schema', t => {
 
   }, fastifyAjvOptionsDefault)
 
+  t.notOk(compiler[sym], 'the ajv reference do not exists if code is not activated')
+
   const validatorFunc1 = compiler({
     schema: {
       $id: 'urn:schema:ref'
@@ -136,4 +143,95 @@ t.test('compile same $id when in external schema', t => {
 
   t.pass('the compile does not fail if the schema compiled is already in the external schemas')
   t.equal(validatorFunc1, validatorFunc2, 'the returned function is the same')
+})
+
+t.test('JTD MODE', t => {
+  t.plan(2)
+
+  t.test('compile jtd schema', t => {
+    t.plan(4)
+    const factory = AjvCompiler()
+
+    const jtdSchema = {
+      discriminator: 'version',
+      mapping: {
+        1: {
+          properties: {
+            foo: { type: 'uint8' }
+          }
+        },
+        2: {
+          properties: {
+            foo: { type: 'string' }
+          }
+        }
+      }
+    }
+
+    const compiler = factory({}, fastifyJtdDefault)
+    const validatorFunc = compiler({ schema: jtdSchema })
+    t.pass('generated validation function for JTD SCHEMA')
+
+    const result = validatorFunc({
+      version: '2',
+      foo: []
+    })
+    t.notOk(result, 'failed validation')
+    t.type(validatorFunc.errors, 'Array')
+
+    const success = validatorFunc({
+      version: '1',
+      foo: 42
+    })
+    t.ok(success)
+  })
+
+  t.test('fastify integration', async t => {
+    const factory = AjvCompiler()
+
+    const app = fastify({
+      jsonShorthand: false,
+      ajv: {
+        customOptions: { },
+        mode: 'JTD'
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: factory
+        }
+      }
+    })
+
+    app.post('/', {
+      schema: {
+        body: {
+          discriminator: 'version',
+          mapping: {
+            1: {
+              properties: {
+                foo: { type: 'uint8' }
+              }
+            },
+            2: {
+              properties: {
+                foo: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }, () => {})
+
+    const res = await app.inject({
+      url: '/',
+      method: 'POST',
+      payload: {
+        version: '1',
+        foo: 'this is not a number'
+      }
+    })
+
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'body must be uint8')
+  })
 })
