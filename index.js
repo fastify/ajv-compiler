@@ -48,14 +48,21 @@ class ValidatorCompiler {
       this.ajv = new Ajv(Object.assign({}, defaultAjvOptions, options.customOptions))
     }
 
+    let addFormatPlugin = true
     if (options.plugins && options.plugins.length > 0) {
       for (const plugin of options.plugins) {
         if (Array.isArray(plugin)) {
+          addFormatPlugin = addFormatPlugin && plugin[0].name !== 'formatsPlugin'
           plugin[0](this.ajv, plugin[1])
         } else {
+          addFormatPlugin = addFormatPlugin && plugin.name !== 'formatsPlugin'
           plugin(this.ajv)
         }
       }
+    }
+
+    if (addFormatPlugin) {
+      require('ajv-formats')(this.ajv)
     }
 
     const sourceSchemas = Object.values(externalSchemas)

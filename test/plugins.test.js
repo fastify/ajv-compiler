@@ -32,14 +32,46 @@ t.test('Format Baseline test', async (t) => {
   t.equal(res.payload, 'hello')
 })
 
-t.test('Format test', (t) => {
+t.test('Custom Format plugin loading test', (t) => {
   t.plan(6)
   const app = buildApplication({
     customOptions: {
       validateFormats: true
     },
-    plugins: [ajvFormats]
+    plugins: [[ajvFormats, { mode: 'fast' }]]
   })
+
+  app.inject('/hello', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400, 'format validation applies')
+  })
+
+  app.inject('/2ad0612c-7578-4b18-9a6f-579863f40e0b', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400, 'format validation applies')
+  })
+
+  app.inject({
+    url: '/2ad0612c-7578-4b18-9a6f-579863f40e0b',
+    headers: {
+      'x-foo': 'hello',
+      'x-date': new Date().toISOString(),
+      'x-email': 'foo@bar.baz'
+    },
+    query: {
+      foo: 'hello',
+      date: new Date().toISOString(),
+      email: 'foo@bar.baz'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+t.test('Format plugin set by default test', (t) => {
+  t.plan(6)
+  const app = buildApplication({})
 
   app.inject('/hello', (err, res) => {
     t.error(err)
