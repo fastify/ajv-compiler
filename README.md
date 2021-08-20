@@ -32,6 +32,9 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
 }
 ```
 
+Moreover, the [`ajv-formats`](https://www.npmjs.com/package/ajv-formats) module is included by default.
+If you need to customize check the usage section below.
+
 To customize them, see how in the [Fastify official docs](https://www.fastify.io/docs/latest/Server/#ajv).
 
 
@@ -39,6 +42,23 @@ To customize them, see how in the [Fastify official docs](https://www.fastify.io
 
 This module is already used as default by Fastify. 
 If you need to provide to your server instance a different version, refer to [the official doc](https://www.fastify.io/docs/latest/Server/#schemacontroller).
+
+### Customize the `ajv-formats` plugin
+
+The `format` keyword is not part of the official `ajv` module since v7. To use it, you need to install the `ajv-formats` module and this module
+does it for you with the default configuration.
+
+If you need to configure the `ajv-formats` plugin you can do it using the standard Fastify configuration:
+
+```js
+const app = fastify({
+  ajv: {
+    plugins: [[require('ajv-formats'), { mode: 'fast' }]]
+  }
+})
+```
+
+In this way, your setup will have precendence over the `@fastify/ajv-compiler` default configuration.
 
 ### Fastify with JTD
 
