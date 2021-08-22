@@ -27,8 +27,7 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
   removeAdditional: true,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
-  allErrors: false,
-  nullable: true
+  allErrors: false
 }
 ```
 
