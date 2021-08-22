@@ -54,6 +54,25 @@ t.test('basic usage', t => {
   t.equal(result, true)
 })
 
+t.test('nullable default', t => {
+  t.plan(2)
+  const factory = AjvCompiler()
+  const compiler = factory({}, fastifyAjvOptionsDefault)
+  const validatorFunc = compiler({
+    schema: {
+      type: 'object',
+      properties: {
+        nullable: { type: 'string', nullable: true },
+        notNullable: { type: 'string' }
+      }
+    }
+  })
+  const input = { nullable: null, notNullable: null }
+  const result = validatorFunc(input)
+  t.equal(result, true)
+  t.same(input, { nullable: null, notNullable: '' }, 'the notNullable field has been coerced')
+})
+
 t.test('plugin loading', t => {
   t.plan(3)
   const factory = AjvCompiler()
