@@ -84,6 +84,30 @@ const app = fastify({
 
 The defaults AJV JTD options are the same as the [Fastify's default options](#AJV-Configuration).
 
+#### Fastify with JTD and serialization
+
+You can use JTD Schemas to serialize your response object too:
+
+```js
+const factoryValidator = require('@fastify/ajv-compiler')()
+const factorySerializer = require('@fastify/ajv-compiler')({ asSerializer: true })
+
+const app = fastify({
+  jsonShorthand: false,
+  ajv: {
+    customOptions: { }, // additional JTD options
+    mode: 'JTD'
+  },
+  schemaController: {
+    compilersFactory: {
+      buildValidator: factoryValidator,
+      buildSerializer: factorySerializer
+    }
+  }
+})
+```
+
+
 ### AJV Standalone
 
 AJV v8 introduces the [standalone feature](https://ajv.js.org/standalone.html) that let you to pre-compile your schemas and use them in your application for a faster startup.

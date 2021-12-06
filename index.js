@@ -2,15 +2,29 @@
 
 const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 const ValidatorCompiler = require('./lib/validator-compiler')
+const SerializerCompiler = require('./lib/serializer-compiler')
 
-function ValidatorSelector () {
+function ValidatorSelector (opts) {
   const validatorPool = new Map()
+  const serializerPool = new Map()
+
+  if (opts && opts.asSerializer === true) {
+    return function buildSerializerFromPool (externalSchemas, serializerOpts) {
+      const uniqueAjvKey = getPoolKey(externalSchemas, serializerOpts)
+      if (serializerPool.has(uniqueAjvKey)) {
+        return serializerPool.get(uniqueAjvKey)
+      }
+
+      const compiler = new SerializerCompiler(externalSchemas, serializerOpts)
+      const ret = compiler.buildSerializerFunction.bind(compiler)
+      serializerPool.set(uniqueAjvKey, ret)
+
+      return ret
+    }
+  }
 
   return function buildCompilerFromPool (externalSchemas, options) {
-    const externals = JSON.stringify(externalSchemas)
-    const ajvConfig = JSON.stringify(options.customOptions)
-
-    const uniqueAjvKey = `${externals}${ajvConfig}`
+    const uniqueAjvKey = getPoolKey(externalSchemas, options.customOptions)
     if (validatorPool.has(uniqueAjvKey)) {
       return validatorPool.get(uniqueAjvKey)
     }
@@ -27,5 +41,10 @@ function ValidatorSelector () {
   }
 }
 
+function getPoolKey (externalSchemas, options) {
+  const externals = JSON.stringify(externalSchemas)
+  const ajvConfig = JSON.stringify(options)
+  return `${externals}${ajvConfig}`
+}
 module.exports = ValidatorSelector
 module.exports.AjvReference = AjvReference
