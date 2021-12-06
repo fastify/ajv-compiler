@@ -32,9 +32,9 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
 ```
 
 Moreover, the [`ajv-formats`](https://www.npmjs.com/package/ajv-formats) module is included by default.
-If you need to customize check the usage section below.
+If you need to customize it, check the _usage_ section below.
 
-To customize them, see how in the [Fastify official docs](https://www.fastify.io/docs/latest/Server/#ajv).
+To customize the `ajv`'s options, see how in the [Fastify official docs](https://www.fastify.io/docs/latest/Server/#ajv).
 
 
 ## Usage
@@ -178,7 +178,7 @@ This module provide a factory function to produce [Validator Compilers](https://
 
 The Fastify factory function is just one per server instance and it is called for every encapsulated context created by the application through the `fastify.register()` call.
 
-Every Validator Compiler produced has a dedicated AJV instance, so, this factory will try to produce as less as possible AJV instances to reduce the memory footprint and the startup time.
+Every Validator Compiler produced, has a dedicated AJV instance, so, this factory will try to produce as less as possible AJV instances to reduce the memory footprint and the startup time.
 
 The variables involved to choose if a Validator Compiler can be reused are:
 
