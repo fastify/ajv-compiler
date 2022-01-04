@@ -13,7 +13,8 @@ This allows the user to decide which version of AJV to use in their Fastify base
 | `@fastify/ajv-compiler` | `ajv` | Default in `fastify` |
 |------------------------:|------:|---------------------:|
 |                    v1.x |  v6.x |                ^3.14 |
-|                    v2.x |  v8.x |                  TBD |
+|                    v2.x |  v8.x |                    - |
+|                    v3.x |  v8.x |                 ^4.x |
 
 
 ### AJV Configuration
@@ -22,7 +23,7 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
 
 ```js
 {
-  coerceTypes: true,
+  coerceTypes: 'array',
   useDefaults: true,
   removeAdditional: true,
   // Explicitly set allErrors to `false`.
