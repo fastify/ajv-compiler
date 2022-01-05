@@ -6,7 +6,7 @@ const AjvJTD = require('ajv/dist/jtd')
 const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 
 const defaultAjvOptions = {
-  coerceTypes: true,
+  coerceTypes: 'array',
   useDefaults: true,
   removeAdditional: true,
   // Explicitly set allErrors to `false`.
