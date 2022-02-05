@@ -2,6 +2,7 @@
 
 const Ajv = require('ajv').default
 const AjvJTD = require('ajv/dist/jtd')
+const fastUri = require('fast-uri')
 
 const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 
@@ -9,6 +10,7 @@ const defaultAjvOptions = {
   coerceTypes: 'array',
   useDefaults: true,
   removeAdditional: true,
+  uriResolver: fastUri,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false
