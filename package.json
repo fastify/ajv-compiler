@@ -39,7 +39,7 @@
     "fastify": "^3.20.1",
     "require-from-string": "^2.0.2",
     "sanitize-filename": "^1.6.3",
-    "standard": "^16.0.3",
+    "standard": "^17.0.0",
     "tap": "^16.2.0",
     "tsd": "^0.20.0"
   },
