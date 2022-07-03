@@ -27,7 +27,7 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
   useDefaults: true,
   removeAdditional: true,
   uriResolver: require('fast-uri'),
-  addUsedSchema: true,
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false

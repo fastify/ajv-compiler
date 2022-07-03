@@ -38,7 +38,7 @@ const fastifyAjvOptionsDefault = Object.freeze({
 })
 
 t.test('must not store schema on compile', t => {
-  t.plan(1)
+  t.plan(4)
   const factory = AjvCompiler()
   const compiler = factory({}, fastifyAjvOptionsDefault)
   const postFn = compiler({ schema: postSchema })
