@@ -11,6 +11,7 @@ const defaultAjvOptions = {
   useDefaults: true,
   removeAdditional: true,
   uriResolver: fastUri,
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false
@@ -79,6 +80,7 @@ class ValidatorCompiler {
     // compiled the schema with the given id, we just return it.
     if (schema.$id) {
       const stored = this.ajv.getSchema(schema.$id)
+      console.log({ stored })
       if (stored) {
         return stored
       }
