@@ -11,6 +11,7 @@ const defaultAjvOptions = {
   useDefaults: true,
   removeAdditional: true,
   uriResolver: fastUri,
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false
