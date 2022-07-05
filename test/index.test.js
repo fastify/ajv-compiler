@@ -271,6 +271,6 @@ t.test('JTD MODE', t => {
     })
 
     t.equal(res.statusCode, 400)
-    t.equal(res.json().message, 'body must be uint8')
+    t.equal(res.json().message, 'body/foo must be uint8')
   })
 })

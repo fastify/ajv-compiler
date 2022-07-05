@@ -85,7 +85,7 @@ t.test('generate standalone code', t => {
 })
 
 t.test('fastify integration - writeMode', async t => {
-  t.plan(4)
+  t.plan(6)
 
   const factory = AjvStandaloneCompiler({
     readMode: false,
@@ -105,7 +105,7 @@ t.test('fastify integration - writeMode', async t => {
 })
 
 t.test('fastify integration - readMode', async t => {
-  t.plan(5)
+  t.plan(6)
 
   const factory = AjvStandaloneCompiler({
     readMode: true,
