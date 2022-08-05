@@ -172,7 +172,7 @@ const app = fastify({
 
 // ... add all your routes with schemas as before...
 
-app.listen(3000)
+app.listen({ port: 3000 })
 ```
 
 ### How it works
