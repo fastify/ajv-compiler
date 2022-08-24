@@ -91,3 +91,4 @@ class ValidatorCompiler {
 
 module.exports = ValidatorSelector
 module.exports.AjvReference = AjvReference
+module.exports.StandaloneValidator = require('./standalone')
