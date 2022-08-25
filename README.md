@@ -100,7 +100,7 @@ To use this feature, you must be aware of the following:
 #### Generate and save the compiled schemas
 
 Fastify helps you to generate the validation schemas functions and it is your choice to save them where you want.
-To accomplish this, you must use a new compiler: `@fastify/ajv-compiler/standalone`.
+To accomplish this, you must use a new compiler: `StandaloneValidator`.
 
 You must provide 2 parameters to this compiler:
 
@@ -111,7 +111,8 @@ When `readMode: false`, **the compiler is meant to be used in development ONLY**
 
 
 ```js
-const factory = require('@fastify/ajv-compiler/standalone')({
+const { StandaloneValidator } = require('@fastify/ajv-compiler')
+const factory = StandaloneValidator({
   readMode: false,
   storeFunction (routeOpts, schemaValidationCode) {
     // routeOpts is like: { schema, method, url, httpPart }
@@ -141,7 +142,7 @@ app.ready().then(() => {
 #### Read the compiled schemas functions
 
 At this stage, you should have a file for every route's schema.
-To use them, you must use the `@fastify/ajv-compiler/standalone` with the parameters:
+To use them, you must use the `StandaloneValidator` with the parameters:
 
 - `readMode: true`: a boolean to indicate that you want read and use the schemas functions string.
 - `restoreFunction`" a sync function that must return a function to validate the route.
@@ -152,9 +153,10 @@ Important keep away before you continue reading the documentation:
 - as you can see, you must relate the route's schema to the file name using the `routeOpts` object. You may use the `routeOpts.schema.$id` field to do so, it is up to you to define a unique schema identifier.
 
 ```js
-const factory = require('@fastify/ajv-compiler/standalone')({
+const { StandaloneValidator } = require('@fastify/ajv-compiler')
+const factory = StandaloneValidator({
   readMode: true,
-  restoreFunction (routeOpts, schemaValidationCode) {
+  restoreFunction (routeOpts) {
     // routeOpts is like: { schema, method, url, httpPart }
     const fileName = generateFileName(routeOpts)
     return require(path.join(__dirname, fileName))
