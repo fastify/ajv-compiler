@@ -29,7 +29,7 @@ export type ValidatorCompiler = (
 
 export declare function ValidatorSelector(): ValidatorCompiler;
 
-export type { Options } from "ajv";
+export type { Options, ErrorObject } from "ajv";
 export type Ajv = _ajv;
 export default ValidatorSelector;
 export { StandaloneValidator };
