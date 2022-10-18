@@ -54,6 +54,26 @@ t.test('basic usage', t => {
   t.equal(result, true)
 })
 
+t.test('array coercion', t => {
+  t.plan(2)
+  const factory = AjvCompiler()
+  const compiler = factory(externalSchemas1, fastifyAjvOptionsDefault)
+
+  const arraySchema = {
+    $id: 'example1',
+    type: 'object',
+    properties: {
+      name: { type: 'array', items: { type: 'string' } }
+    }
+  }
+
+  const validatorFunc = compiler({ schema: arraySchema })
+
+  const inputObj = { name: 'hello' }
+  t.equal(validatorFunc(inputObj), true)
+  t.same(inputObj, { name: ['hello'] }, 'the name property should be coerced to an array')
+})
+
 t.test('nullable default', t => {
   t.plan(2)
   const factory = AjvCompiler()
@@ -251,6 +271,6 @@ t.test('JTD MODE', t => {
     })
 
     t.equal(res.statusCode, 400)
-    t.equal(res.json().message, 'body must be uint8')
+    t.equal(res.json().message, 'body/foo must be uint8')
   })
 })

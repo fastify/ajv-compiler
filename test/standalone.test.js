@@ -6,7 +6,7 @@ const t = require('tap')
 const fastify = require('fastify')
 const sanitize = require('sanitize-filename')
 
-const AjvStandaloneCompiler = require('../standalone')
+const { StandaloneValidator: AjvStandaloneValidator } = require('../')
 
 function generateFileName (routeOpts) {
   return `/ajv-generated-${sanitize(routeOpts.schema.$id)}-${routeOpts.method}-${routeOpts.httpPart}-${sanitize(routeOpts.url)}.js`
@@ -15,10 +15,10 @@ function generateFileName (routeOpts) {
 t.test('errors', t => {
   t.plan(2)
   t.throws(() => {
-    AjvStandaloneCompiler()
+    AjvStandaloneValidator()
   }, 'missing restoreFunction')
   t.throws(() => {
-    AjvStandaloneCompiler({ readMode: false })
+    AjvStandaloneValidator({ readMode: false })
   }, 'missing storeFunction')
 })
 
@@ -56,7 +56,7 @@ t.test('generate standalone code', t => {
     [refSchema.$id]: refSchema
   }
 
-  const factory = AjvStandaloneCompiler({
+  const factory = AjvStandaloneValidator({
     readMode: false,
     storeFunction (routeOpts, schemaValidationCode) {
       t.same(routeOpts, endpointSchema)
@@ -85,9 +85,9 @@ t.test('generate standalone code', t => {
 })
 
 t.test('fastify integration - writeMode', async t => {
-  t.plan(4)
+  t.plan(6)
 
-  const factory = AjvStandaloneCompiler({
+  const factory = AjvStandaloneValidator({
     readMode: false,
     storeFunction (routeOpts, schemaValidationCode) {
       const fileName = generateFileName(routeOpts)
@@ -105,9 +105,9 @@ t.test('fastify integration - writeMode', async t => {
 })
 
 t.test('fastify integration - readMode', async t => {
-  t.plan(5)
+  t.plan(6)
 
-  const factory = AjvStandaloneCompiler({
+  const factory = AjvStandaloneValidator({
     readMode: true,
     storeFunction () {
       t.fail('read mode ON')

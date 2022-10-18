@@ -1,8 +1,21 @@
 'use strict'
 
+const fastUri = require('fast-uri')
+
 const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 const ValidatorCompiler = require('./lib/validator-compiler')
 const SerializerCompiler = require('./lib/serializer-compiler')
+
+const defaultAjvOptions = {
+  coerceTypes: 'array',
+  useDefaults: true,
+  removeAdditional: true,
+  uriResolver: fastUri,
+  addUsedSchema: false,
+  // Explicitly set allErrors to `false`.
+  // When set to `true`, a DoS attack is possible.
+  allErrors: false
+}
 
 function ValidatorSelector (opts) {
   const validatorPool = new Map()
@@ -48,3 +61,4 @@ function getPoolKey (externalSchemas, options) {
 }
 module.exports = ValidatorSelector
 module.exports.AjvReference = AjvReference
+module.exports.StandaloneValidator = require('./standalone')
