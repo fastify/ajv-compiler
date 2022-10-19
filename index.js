@@ -1,29 +1,16 @@
 'use strict'
 
-const fastUri = require('fast-uri')
-
 const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 const ValidatorCompiler = require('./lib/validator-compiler')
 const SerializerCompiler = require('./lib/serializer-compiler')
-
-const defaultAjvOptions = {
-  coerceTypes: 'array',
-  useDefaults: true,
-  removeAdditional: true,
-  uriResolver: fastUri,
-  addUsedSchema: false,
-  // Explicitly set allErrors to `false`.
-  // When set to `true`, a DoS attack is possible.
-  allErrors: false
-}
 
 function ValidatorSelector (opts) {
   const validatorPool = new Map()
   const serializerPool = new Map()
 
-  if (opts && opts.asSerializer === true) {
+  if (opts && opts.jtdSerializer === true) {
     return function buildSerializerFromPool (externalSchemas, serializerOpts) {
-      const uniqueAjvKey = getPoolKey(externalSchemas, serializerOpts)
+      const uniqueAjvKey = getPoolKey({}, serializerOpts)
       if (serializerPool.has(uniqueAjvKey)) {
         return serializerPool.get(uniqueAjvKey)
       }

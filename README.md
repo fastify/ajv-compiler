@@ -93,7 +93,7 @@ You can use JTD Schemas to serialize your response object too:
 
 ```js
 const factoryValidator = require('@fastify/ajv-compiler')()
-const factorySerializer = require('@fastify/ajv-compiler')({ asSerializer: true })
+const factorySerializer = require('@fastify/ajv-compiler')({ jtdSerializer: true })
 
 const app = fastify({
   jsonShorthand: false,
