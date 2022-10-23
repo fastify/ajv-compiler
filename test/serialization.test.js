@@ -1,7 +1,5 @@
 'use strict'
 
-process.env.TZ = 'UTC'
-
 const t = require('tap')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
