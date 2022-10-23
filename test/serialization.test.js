@@ -1,5 +1,7 @@
 'use strict'
 
+process.env.TZ = 'UTC'
+
 const t = require('tap')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
@@ -111,7 +113,7 @@ t.test('fastify integration within JTD serializer', async t => {
   }, async () => {
     return {
       id: '123',
-      createdAt: new Date(1999, 1, 1),
+      createdAt: new Date('1999-01-31T23:00:00.000Z'),
       karma: 42,
       isAdmin: true,
       remove: 'me'
@@ -189,7 +191,7 @@ t.test('fastify integration and cached serializer', async t => {
     }, async () => {
       return {
         id: '123',
-        createdAt: new Date(1999, 1, 1),
+        createdAt: new Date('1999-01-31T23:00:00.000Z'),
         karma: 42,
         isAdmin: true,
         remove: 'me'
