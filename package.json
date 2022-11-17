@@ -33,6 +33,7 @@
     "url": "https://github.com/fastify/ajv-compiler/issues"
   },
   "homepage": "https://github.com/fastify/ajv-compiler#readme",
+  "files": ["*.js", "*.d.ts", "lib/*.js"],
   "devDependencies": {
     "ajv-cli": "^5.0.0",
     "ajv-errors": "^3.0.0",
