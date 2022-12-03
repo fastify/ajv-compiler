@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "unit": "tap test/**/*.test.js",
+    "unit": "tap",
     "test": "npm run unit && npm run test:typescript",
     "posttest": "rimraf test/ajv-generated*.js",
     "test:typescript": "tsd",
