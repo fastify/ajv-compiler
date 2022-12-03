@@ -1,35 +1,46 @@
-import { default as _ajv, Options } from "ajv";
+import { default as _ajv } from "ajv";
+import type { Options, ErrorObject } from "ajv";
 
-export enum HttpParts {
-  Body = "body",
-  Headers = "headers",
-  Params = "params",
-  Query = "querystring",
+type AjvCompilerFn = typeof AjvCompiler
+
+declare namespace AjvCompiler {
+  export type { Options, ErrorObject }
+  export type Ajv = _ajv;
+  
+  export { StandaloneValidator }
+
+  export const AjvReference: Symbol
+
+  export enum HttpParts {
+    Body = "body",
+    Headers = "headers",
+    Params = "params",
+    Query = "querystring",
+  }
+
+  export type RouteDefinition = {
+    method: string,
+    url: string,
+    httpPart: HttpParts,
+    schema?: unknown,
+  }
+
+  export interface StandaloneOptions {
+    readMode: Boolean,
+    storeFunction?(opts: RouteDefinition, schemaValidationCode: string): void,
+    restoreFunction?(opts: RouteDefinition): void,
+  }
+
+  export type ValidatorCompiler = (
+    externalSchemas: unknown,
+    options: Options
+  ) => Ajv;
+
+  export const AjvCompiler: AjvCompilerFn
+  export { AjvCompiler as default }
 }
 
-export type RouteDefinition = {
-  method: string,
-  url: string,
-  httpPart: HttpParts,
-  schema?: unknown,
-}
+declare function AjvCompiler(): AjvCompiler.ValidatorCompiler;
+declare function StandaloneValidator(options: AjvCompiler.StandaloneOptions): AjvCompiler.ValidatorCompiler;
 
-export interface StandaloneOptions {
-  readMode: Boolean,
-  storeFunction?(opts: RouteDefinition, schemaValidationCode: string): void,
-  restoreFunction?(opts: RouteDefinition): void,
-}
-
-declare function StandaloneValidator(options: StandaloneOptions): ValidatorCompiler;
-
-export type ValidatorCompiler = (
-  externalSchemas: unknown,
-  options: Options
-) => Ajv;
-
-export declare function ValidatorSelector(): ValidatorCompiler;
-
-export type { Options, ErrorObject } from "ajv";
-export type Ajv = _ajv;
-export default ValidatorSelector;
-export { StandaloneValidator };
+export = AjvCompiler
