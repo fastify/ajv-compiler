@@ -1,6 +1,6 @@
 import { AnySchemaObject } from "ajv";
 import { expectAssignable, expectType } from "tsd";
-import  ValidatorSelector, { ValidatorCompiler, StandaloneValidator, RouteDefinition, ErrorObject } from "../..";
+import  ValidatorSelector, { ValidatorCompiler, StandaloneValidator, RouteDefinition, ErrorObject } from "..";
 
 const compiler = ValidatorSelector();
 expectType<ValidatorCompiler>(compiler);
