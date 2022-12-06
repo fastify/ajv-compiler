@@ -241,3 +241,39 @@ t.test('fastify integration and cached serializer', async t => {
     })
   }
 })
+
+t.test('fastify integration within JTD serializer and custom options', async t => {
+  const factorySerializer = AjvCompiler({ jtdSerializer: true })
+
+  const app = fastify({
+    jsonShorthand: false,
+    serializerOpts: {
+      allErrors: true,
+      logger: 'wrong-value'
+    },
+    schemaController: {
+      compilersFactory: {
+        buildSerializer: factorySerializer
+      }
+    }
+  })
+
+  app.post('/', {
+    schema: {
+      response: {
+        200: {
+          properties: {
+            test: { type: 'boolean' }
+          }
+        }
+      }
+    }
+  }, async () => { })
+
+  try {
+    await app.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.equal(error.message, 'logger must implement log, warn and error methods', 'the wrong setting is forwarded to ajv/jtd')
+  }
+})
