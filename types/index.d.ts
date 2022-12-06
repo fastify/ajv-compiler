@@ -62,7 +62,7 @@ declare namespace AjvCompiler {
 declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions }): AjvCompile
 declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions }): AjvCompile
 
-declare function buildSerializerFromPool(externalSchemas: any, serializerOpts?: { mode?: never; customOptions?: JTDOptions }): AjvJTDCompile
+declare function buildSerializerFromPool(externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
 
 declare function AjvCompiler(opts: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
 declare function AjvCompiler(opts?: { jtdSerializer?: false }): AjvCompiler.BuildCompilerFromPool
