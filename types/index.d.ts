@@ -1,23 +1,21 @@
 import { AnySchema,  default as _ajv, Options as AjvOptions, ValidateFunction } from "ajv";
 import { default as AjvJTD, JTDOptions } from "ajv/dist/jtd";
 import type { Options, ErrorObject } from "ajv";
+import { AnyValidateFunction } from "ajv/dist/core";
 
+type Ajv = _ajv;
 type AjvSerializerGenerator = typeof AjvCompiler
+
+type AjvJTDCompile = AjvJTD['compileSerializer']
+type AjvCompile = (schema: AnySchema, _meta?: boolean) => AnyValidateFunction
 
 declare namespace AjvCompiler {
   export type { Options, ErrorObject }
-  export type Ajv = _ajv;
+  export { Ajv };
 
-  type AjvJTDCompile = AjvJTD['compileSerializer']
-  type AjvCompile = Ajv['compile']
+  export type BuildSerializerFromPool = typeof buildSerializerFromPool
 
-  export type BuildSerializerFromPool = (externalSchemas: any, serializerOpts: JTDOptions) => AjvJTDCompile
-
-  export type BuildCompilerFromPool =
-    ((externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD', customOptions?: JTDOptions }) => ReturnType<AjvCompile>) |
-    ((externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: undefined, customOptions?: AjvOptions }) => ReturnType<AjvCompile>)
-
-  export { StandaloneValidator }
+  export type BuildCompilerFromPool = typeof buildCompilerFromPool
 
   export const AjvReference: Symbol
 
@@ -35,6 +33,10 @@ declare namespace AjvCompiler {
     schema?: unknown,
   }
 
+  export type StandaloneRestoreFunction = (opts: RouteDefinition) => ValidateFunction
+
+  export type StandaloneStoreFunction = (opts: RouteDefinition, schemaValidationCode: string) => void
+
   export type StandaloneOptionsReadModeOn = {
     readMode: true;
     restoreFunction?: StandaloneRestoreFunction
@@ -47,19 +49,24 @@ declare namespace AjvCompiler {
 
   export type StandaloneOptions = StandaloneOptionsReadModeOn | StandaloneOptionsReadModeOff
 
-  export type ValidatorCompiler = BuildCompilerFromPool | BuildSerializerFromPool
+  export type ValidatorFactory = BuildCompilerFromPool | BuildSerializerFromPool
 
-  export type StandaloneRestoreFunction = (opts: RouteDefinition) => ValidateFunction
+  export type ValidatorCompiler = ReturnType<ValidatorFactory>
 
-  export type StandaloneStoreFunction = (opts: RouteDefinition, schemaValidationCode: string) => void
+  export { StandaloneValidator }
 
   export const AjvCompiler: AjvSerializerGenerator
   export { AjvCompiler as default }
 }
 
-declare function AjvCompiler<T = unknown>(opts?: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
-declare function AjvCompiler<T = unknown>(opts?: { jtdSerializer?: false | undefined }): AjvCompiler.BuildCompilerFromPool
+declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions }): AjvCompile
+declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions }): AjvCompile
 
-declare function StandaloneValidator(options: AjvCompiler.StandaloneOptions): AjvCompiler.ValidatorCompiler;
+declare function buildSerializerFromPool(externalSchemas: any, serializerOpts?: { mode?: never; customOptions?: JTDOptions }): AjvJTDCompile
+
+declare function AjvCompiler(opts: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
+declare function AjvCompiler(opts?: { jtdSerializer?: false }): AjvCompiler.BuildCompilerFromPool
+
+declare function StandaloneValidator(options: AjvCompiler.StandaloneOptions): AjvCompiler.BuildCompilerFromPool;
 
 export = AjvCompiler

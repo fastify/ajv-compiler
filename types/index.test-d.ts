@@ -1,10 +1,24 @@
 import { AnySchemaObject, ValidateFunction } from "ajv";
+import { AnyValidateFunction } from "ajv/dist/core";
 import { expectAssignable, expectType } from "tsd";
-import AjvCompiler, { AjvReference, ValidatorCompiler, StandaloneValidator, RouteDefinition, ErrorObject, BuildCompilerFromPool, BuildSerializerFromPool } from "..";
+import AjvCompiler, { AjvReference, ValidatorFactory, StandaloneValidator, RouteDefinition, ErrorObject, BuildCompilerFromPool, BuildSerializerFromPool, ValidatorCompiler } from "..";
 
-const compiler = AjvCompiler({});
-expectType<BuildCompilerFromPool>(compiler);
-
+{
+  const compiler = AjvCompiler({});
+  expectType<BuildCompilerFromPool>(compiler);
+}
+{
+  const compiler = AjvCompiler();
+  expectType<BuildCompilerFromPool>(compiler);
+}
+{
+  const compiler = AjvCompiler({ jtdSerializer: false});
+  expectType<BuildCompilerFromPool>(compiler);
+}
+{
+  const compiler = AjvCompiler({ jtdSerializer: true});
+  expectType<BuildSerializerFromPool>(compiler);
+}
 const reader = StandaloneValidator({
   readMode: true,
   restoreFunction: (route: RouteDefinition) => {
@@ -12,7 +26,7 @@ const reader = StandaloneValidator({
     return {} as ValidateFunction
   },
 });
-expectType<ValidatorCompiler>(reader);
+expectAssignable<ValidatorFactory>(reader);
 
 const writer = StandaloneValidator({
   readMode: false,
@@ -21,7 +35,7 @@ const writer = StandaloneValidator({
     expectAssignable<string>(code)
   },
 });
-expectType<ValidatorCompiler>(writer);
+expectAssignable<ValidatorFactory>(writer);
 
 expectType<unknown>(({} as ErrorObject).data)
 expectType<string>(({} as ErrorObject).instancePath)
@@ -72,4 +86,131 @@ expectType<Symbol>(AjvReference)
   const serializeFunc = compiler({ schema: jtdSchema })
   expectType<(data: unknown) => string>(serializeFunc)
   expectType<string>(serializeFunc({ version: '1', foo: 42 }))
+}
+// JTD
+{
+
+  const factory = AjvCompiler()
+  expectType<BuildCompilerFromPool>(factory)
+
+  const jtdSchema = {
+    discriminator: 'version',
+    mapping: {
+      1: {
+        properties: {
+          foo: { type: 'uint8' }
+        }
+      },
+      2: {
+        properties: {
+          foo: { type: 'string' }
+        }
+      }
+    }
+  }
+
+  const compiler = factory({}, {
+    customOptions: {},
+    mode: 'JTD'
+  })
+  expectAssignable<ValidatorCompiler>(compiler)
+  const validatorFunc = compiler({ schema: jtdSchema })
+  expectAssignable<ValidateFunction>(validatorFunc)
+
+  expectType<boolean | Promise<any>>(validatorFunc({
+    version: '2',
+    foo: []
+  }))
+}
+
+// generate standalone code
+{
+  const base = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const endpointSchema = {
+    schema: {
+      $id: 'urn:schema:endpoint',
+      $ref: 'urn:schema:ref'
+    }
+  }
+
+  const schemaMap = {
+    [base.$id]: base,
+    [refSchema.$id]: refSchema
+  }
+
+  const factory = StandaloneValidator({
+    readMode: false,
+    storeFunction(routeOpts, schemaValidationCode) {
+      expectType<RouteDefinition>(routeOpts)
+      expectType<string>(schemaValidationCode)
+    }
+  })
+  expectAssignable<ValidatorFactory>(factory)
+
+  const compiler = factory(schemaMap)
+  expectAssignable<ValidatorCompiler>(compiler)
+  expectAssignable<Function>(compiler(endpointSchema))
+}
+
+{
+  const base = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const endpointSchema = {
+    schema: {
+      $id: 'urn:schema:endpoint',
+      $ref: 'urn:schema:ref'
+    }
+  }
+
+  const schemaMap = {
+    [base.$id]: base,
+    [refSchema.$id]: refSchema
+  }
+  const factory = StandaloneValidator({
+    readMode: true,
+    restoreFunction(routeOpts) {
+      expectType<RouteDefinition>(routeOpts)
+      return {} as ValidateFunction
+    }
+  })
+  expectAssignable<ValidatorFactory>(factory)
+
+  const compiler = factory(schemaMap)
+  expectAssignable<ValidatorCompiler>(compiler)
+  expectType<AnyValidateFunction<any>>(compiler(endpointSchema))
 }
