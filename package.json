@@ -3,7 +3,7 @@
   "version": "3.4.0",
   "description": "Build and manage the AJV instances for the fastify framework",
   "main": "index.js",
-  "types": "index.d.ts",
+  "types": "types/index.d.ts",
   "directories": {
     "test": "test"
   },
@@ -51,8 +51,5 @@
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "fast-uri": "^2.0.0"
-  },
-  "tsd": {
-    "directory": "test/types"
   }
 }

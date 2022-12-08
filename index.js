@@ -4,7 +4,7 @@ const AjvReference = Symbol.for('fastify.ajv-compiler.reference')
 const ValidatorCompiler = require('./lib/validator-compiler')
 const SerializerCompiler = require('./lib/serializer-compiler')
 
-function ValidatorSelector (opts) {
+function AjvCompiler (opts) {
   const validatorPool = new Map()
   const serializerPool = new Map()
 
@@ -46,6 +46,8 @@ function getPoolKey (externalSchemas, options) {
   const ajvConfig = JSON.stringify(options)
   return `${externals}${ajvConfig}`
 }
-module.exports = ValidatorSelector
+module.exports = AjvCompiler
+module.exports.default = AjvCompiler
+module.exports.AjvCompiler = AjvCompiler
 module.exports.AjvReference = AjvReference
 module.exports.StandaloneValidator = require('./standalone')
