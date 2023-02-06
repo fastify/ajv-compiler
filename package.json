@@ -12,7 +12,6 @@
     "lint:fix": "standard --fix",
     "unit": "tap",
     "test": "npm run unit && npm run test:typescript",
-    "posttest": "rimraf test/ajv-generated*.js",
     "test:typescript": "tsd",
     "ajv:compile": "ajv compile -s test/source.json -o test/validate_schema.js"
   },
@@ -41,7 +40,6 @@
     "cronometro": "^1.1.4",
     "fastify": "^4.0.0",
     "require-from-string": "^2.0.2",
-    "rimraf": "^3.0.2",
     "sanitize-filename": "^1.6.3",
     "standard": "^17.0.0",
     "tap": "^16.2.0",
