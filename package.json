@@ -3,6 +3,7 @@
   "version": "3.5.0",
   "description": "Build and manage the AJV instances for the fastify framework",
   "main": "index.js",
+  "type": "commonjs",
   "types": "types/index.d.ts",
   "directories": {
     "test": "test"
