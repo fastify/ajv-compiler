@@ -15,7 +15,7 @@ This allows the user to decide which version of AJV to use in their Fastify base
 |                    v1.x |  v6.x |                ^3.14 |
 |                    v2.x |  v8.x |                    - |
 |                    v3.x |  v8.x |                 ^4.x |
-
+|                    v4.x |  v8.x |                 ^4.x |
 
 ### AJV Configuration
 
