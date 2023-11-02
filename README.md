@@ -60,7 +60,7 @@ const app = fastify({
 })
 ```
 
-In this way, your setup will have precendence over the `@fastify/ajv-compiler` default configuration.
+In this way, your setup will have precedence over the `@fastify/ajv-compiler` default configuration.
 
 ### Fastify with JTD
 
