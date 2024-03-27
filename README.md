@@ -37,13 +37,13 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
 Moreover, the [`ajv-formats`](https://www.npmjs.com/package/ajv-formats) module is included by default.
 If you need to customize it, check the _usage_ section below.
 
-To customize the `ajv`'s options, see how in the [Fastify official docs](https://www.fastify.io/docs/latest/Reference/Server/#ajv).
+To customize the `ajv`'s options, see how in the [Fastify official docs](https://fastify.dev/docs/latest/Reference/Server/#ajv).
 
 
 ## Usage
 
 This module is already used as default by Fastify. 
-If you need to provide to your server instance a different version, refer to [the official doc](https://www.fastify.io/docs/latest/Reference/Server/#schemacontroller).
+If you need to provide to your server instance a different version, refer to [the official doc](https://fastify.dev/docs/latest/Reference/Server/#schemacontroller).
 
 ### Customize the `ajv-formats` plugin
 
@@ -203,7 +203,7 @@ app.listen({ port: 3000 })
 
 ### How it works
 
-This module provide a factory function to produce [Validator Compilers](https://www.fastify.io/docs/latest/Reference/Server/#validatorcompiler) functions.
+This module provide a factory function to produce [Validator Compilers](https://fastify.dev/docs/latest/Reference/Server/#validatorcompiler) functions.
 
 The Fastify factory function is just one per server instance and it is called for every encapsulated context created by the application through the `fastify.register()` call.
 
@@ -211,7 +211,7 @@ Every Validator Compiler produced, has a dedicated AJV instance, so, this factor
 
 The variables involved to choose if a Validator Compiler can be reused are:
 
-- the AJV configuration: it is [one per server](https://www.fastify.io/docs/latest/Reference/Server/#ajv)
+- the AJV configuration: it is [one per server](https://fastify.dev/docs/latest/Reference/Server/#ajv)
 - the external JSON schemas: once a new schema is added to a fastify's context, calling `fastify.addSchema()`, it will cause a new AJV inizialization
 
 
