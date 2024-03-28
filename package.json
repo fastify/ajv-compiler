@@ -36,19 +36,19 @@
   "devDependencies": {
     "ajv-cli": "^5.0.0",
     "ajv-errors": "^3.0.0",
-    "ajv-i18n": "^4.0.1",
+    "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
     "cronometro": "^3.0.1",
-    "fastify": "^4.0.0",
+    "fastify": "^4.26.2",
     "require-from-string": "^2.0.2",
     "sanitize-filename": "^1.6.3",
-    "standard": "^17.0.0",
-    "tap": "^16.2.0",
-    "tsd": "^0.30.0"
+    "standard": "^17.1.0",
+    "tap": "^18.7.1",
+    "tsd": "^0.30.7"
   },
   "dependencies": {
-    "ajv": "^8.11.0",
+    "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
-    "fast-uri": "^2.0.0"
+    "fast-uri": "^2.3.0"
   }
 }
