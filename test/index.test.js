@@ -45,6 +45,14 @@ const fastifyAjvOptionsCustom = Object.freeze({
   ]
 })
 
+const fastifyAjvCustomOptionsFormats = Object.freeze({
+  customOptions: {
+    formats: {
+      date: /foo/
+    }
+  }
+})
+
 t.test('basic usage', t => {
   t.plan(1)
   const factory = AjvCompiler()
@@ -118,6 +126,23 @@ t.test('plugin loading', t => {
   const resultFail = validatorFunc({})
   t.equal(resultFail, false)
   t.equal(validatorFunc.errors[0].message, 'hello world')
+})
+
+t.test('customOptions.formats have precedence', t => {
+  t.plan(2)
+  const factory = AjvCompiler()
+  const compiler1 = factory(externalSchemas1, fastifyAjvCustomOptionsFormats)
+  const validatorFunc = compiler1({
+    schema: {
+      type: 'string',
+      format: 'date'
+    }
+  })
+  const result = validatorFunc('foo')
+  t.equal(result, true)
+
+  const resultFail = validatorFunc('2016-10-02')
+  t.equal(resultFail, false)
 })
 
 t.test('optimization - cache ajv instance', t => {
