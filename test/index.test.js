@@ -136,6 +136,37 @@ t.test('optimization - cache ajv instance', t => {
   t.not(compiler4, compiler3, 'new ajv instance when externa schema change')
 })
 
+t.test('the onCreate callback can enhance the ajv instance', t => {
+  t.plan(2)
+  const factory = AjvCompiler()
+
+  const fastifyAjvCustomOptionsFormats = Object.freeze({
+    onCreate (ajv) {
+      for (const [formatName, format] of Object.entries(this.customOptions.formats)) {
+        ajv.addFormat(formatName, format)
+      }
+    },
+    customOptions: {
+      formats: {
+        date: /foo/
+      }
+    }
+  })
+
+  const compiler1 = factory(externalSchemas1, fastifyAjvCustomOptionsFormats)
+  const validatorFunc = compiler1({
+    schema: {
+      type: 'string',
+      format: 'date'
+    }
+  })
+  const result = validatorFunc('foo')
+  t.equal(result, true)
+
+  const resultFail = validatorFunc('2016-10-02')
+  t.equal(resultFail, false)
+})
+
 // https://github.com/fastify/fastify/pull/2969
 t.test('compile same $id when in external schema', t => {
   t.plan(3)

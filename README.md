@@ -62,6 +62,21 @@ const app = fastify({
 
 In this way, your setup will have precendence over the `@fastify/ajv-compiler` default configuration.
 
+### Customize the `ajv` instance
+
+If you need to customize the `ajv` instance and take full control of its configuration, you can do it like so:
+
+```js
+const app = fastify({
+  ajv: {
+    onCreate: (ajv) => {
+      // Modify the ajv instance as you need.
+      ajv.addFormat('myFormat', (data) => typeof data === 'string')
+    }
+  }
+})
+```
+
 ### Fastify with JTD
 
 The [JSON Type Definition](https://jsontypedef.com/) feature is supported by AJV v8.x and you can benefit from it in your Fastify application.
