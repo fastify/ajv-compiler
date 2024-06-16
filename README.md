@@ -64,7 +64,8 @@ In this way, your setup will have precendence over the `@fastify/ajv-compiler` d
 
 ### Customize the `ajv` instance
 
-If you need to customize the `ajv` instance and take full control of its configuration, you can do it like so:
+If you need to customize the `ajv` instance and take full control of its configuration, you can do it by
+using the `onCreate` option in the Fastify configuration that accepts a syncronous function that receives the `ajv` instance:
 
 ```js
 const app = fastify({
