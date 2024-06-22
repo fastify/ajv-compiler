@@ -59,8 +59,8 @@ declare namespace AjvCompiler {
   export { AjvCompiler as default }
 }
 
-declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions }): AjvCompile
-declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions }): AjvCompile
+declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
+declare function buildCompilerFromPool(externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
 
 declare function buildSerializerFromPool(externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
 
