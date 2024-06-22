@@ -15,6 +15,17 @@ import AjvCompiler, { AjvReference, ValidatorFactory, StandaloneValidator, Route
   const compiler = AjvCompiler({ jtdSerializer: false});
   expectType<BuildCompilerFromPool>(compiler);
 }
+
+{
+  const factory = AjvCompiler({ jtdSerializer: false });
+  expectType<BuildCompilerFromPool>(factory);
+  factory({}, {
+    onCreate(ajv) {
+      expectType<import("ajv").default>(ajv)
+    }
+  });
+}
+
 {
   const compiler = AjvCompiler({ jtdSerializer: true});
   expectType<BuildSerializerFromPool>(compiler);
