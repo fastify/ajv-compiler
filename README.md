@@ -12,10 +12,10 @@ This allows the user to decide which version of AJV to use in their Fastify base
 
 | `@fastify/ajv-compiler` | `ajv` | Default in `fastify` |
 |------------------------:|------:|---------------------:|
-|                    v1.x |  v6.x |                ^3.14 |
-|                    v2.x |  v8.x |                    - |
+|                    v4.x |  v8.x |                 ^5.x |
 |                    v3.x |  v8.x |                 ^4.x |
-
+|                    v2.x |  v8.x |                    - |
+|                    v1.x |  v6.x |                ^3.14 |
 
 ### AJV Configuration
 
@@ -60,7 +60,7 @@ const app = fastify({
 })
 ```
 
-In this way, your setup will have precendence over the `@fastify/ajv-compiler` default configuration.
+In this way, your setup will have precedence over the `@fastify/ajv-compiler` default configuration.
 
 ### Customize the `ajv` instance
 
