@@ -20,7 +20,7 @@ env:
 
 jobs:
   test:
-    uses: fastify/workflows/.github/workflows/plugins-ci.yml@v5.0.0
+    uses: fastify/workflows/.github/workflows/plugins-ci.yml@v5.0.1
     with:
       lint: true
       license-check: true
