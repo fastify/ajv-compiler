@@ -38,7 +38,7 @@
     "ajv-errors": "^3.0.0",
     "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
-    "cronometro": "^3.0.1",
+    "cronometro": "^4.0.0",
     "fastify": "^5.0.0",
     "require-from-string": "^2.0.2",
     "sanitize-filename": "^1.6.3",
