@@ -42,7 +42,7 @@ To customize the `ajv`'s options, see how in the [Fastify official docs](https:/
 
 ## Usage
 
-This module is already used as default by Fastify. 
+This module is already used as default by Fastify.
 If you need to provide to your server instance a different version, refer to [the official doc](https://fastify.dev/docs/latest/Reference/Server/#schemacontroller).
 
 ### Customize the `ajv-formats` plugin
