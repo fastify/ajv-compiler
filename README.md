@@ -1,7 +1,8 @@
 # @fastify/ajv-compiler
 
 [![CI](https://github.com/fastify/ajv-compiler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fastify/ajv-compiler/actions/workflows/ci.yml)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+[![NPM version](https://img.shields.io/npm/v/@fastify/ajv-compiler.svg?style=flat)](https://www.npmjs.com/package/@fastify/ajv-compiler)
+[![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
 This module manages the [`ajv`](https://www.npmjs.com/package/ajv) instances for the Fastify framework.
 It isolates the `ajv` dependency so that the AJV version is not tightly coupled to the Fastify version.
