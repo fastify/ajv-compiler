@@ -1,34 +1,34 @@
-import { AnySchemaObject, ValidateFunction } from "ajv";
-import { AnyValidateFunction } from "ajv/dist/core";
-import { expectAssignable, expectType } from "tsd";
-import AjvCompiler, { AjvReference, ValidatorFactory, StandaloneValidator, RouteDefinition, ErrorObject, BuildCompilerFromPool, BuildSerializerFromPool, ValidatorCompiler } from "..";
+import { AnySchemaObject, ValidateFunction } from 'ajv'
+import { AnyValidateFunction } from 'ajv/dist/core'
+import { expectAssignable, expectType } from 'tsd'
+import AjvCompiler, { AjvReference, ValidatorFactory, StandaloneValidator, RouteDefinition, ErrorObject, BuildCompilerFromPool, BuildSerializerFromPool, ValidatorCompiler } from '..'
 
 {
-  const compiler = AjvCompiler({});
-  expectType<BuildCompilerFromPool>(compiler);
+  const compiler = AjvCompiler({})
+  expectType<BuildCompilerFromPool>(compiler)
 }
 {
-  const compiler = AjvCompiler();
-  expectType<BuildCompilerFromPool>(compiler);
+  const compiler = AjvCompiler()
+  expectType<BuildCompilerFromPool>(compiler)
 }
 {
-  const compiler = AjvCompiler({ jtdSerializer: false});
-  expectType<BuildCompilerFromPool>(compiler);
+  const compiler = AjvCompiler({ jtdSerializer: false })
+  expectType<BuildCompilerFromPool>(compiler)
 }
 
 {
-  const factory = AjvCompiler({ jtdSerializer: false });
-  expectType<BuildCompilerFromPool>(factory);
+  const factory = AjvCompiler({ jtdSerializer: false })
+  expectType<BuildCompilerFromPool>(factory)
   factory({}, {
-    onCreate(ajv) {
-      expectType<import("ajv").default>(ajv)
+    onCreate (ajv) {
+      expectType<import('ajv').default>(ajv)
     }
-  });
+  })
 }
 
 {
-  const compiler = AjvCompiler({ jtdSerializer: true});
-  expectType<BuildSerializerFromPool>(compiler);
+  const compiler = AjvCompiler({ jtdSerializer: true })
+  expectType<BuildSerializerFromPool>(compiler)
 }
 const reader = StandaloneValidator({
   readMode: true,
@@ -36,8 +36,8 @@ const reader = StandaloneValidator({
     expectAssignable<RouteDefinition>(route)
     return {} as ValidateFunction
   },
-});
-expectAssignable<ValidatorFactory>(reader);
+})
+expectAssignable<ValidatorFactory>(reader)
 
 const writer = StandaloneValidator({
   readMode: false,
@@ -45,8 +45,8 @@ const writer = StandaloneValidator({
     expectAssignable<RouteDefinition>(route)
     expectAssignable<string>(code)
   },
-});
-expectAssignable<ValidatorFactory>(writer);
+})
+expectAssignable<ValidatorFactory>(writer)
 
 expectType<unknown>(({} as ErrorObject).data)
 expectType<string>(({} as ErrorObject).instancePath)
@@ -100,7 +100,6 @@ expectType<Symbol>(AjvReference)
 }
 // JTD
 {
-
   const factory = AjvCompiler()
   expectType<BuildCompilerFromPool>(factory)
 
@@ -169,7 +168,7 @@ expectType<Symbol>(AjvReference)
 
   const factory = StandaloneValidator({
     readMode: false,
-    storeFunction(routeOpts, schemaValidationCode) {
+    storeFunction (routeOpts, schemaValidationCode) {
       expectType<RouteDefinition>(routeOpts)
       expectType<string>(schemaValidationCode)
     }
@@ -214,7 +213,7 @@ expectType<Symbol>(AjvReference)
   }
   const factory = StandaloneValidator({
     readMode: true,
-    restoreFunction(routeOpts) {
+    restoreFunction (routeOpts) {
       expectType<RouteDefinition>(routeOpts)
       return {} as ValidateFunction
     }
