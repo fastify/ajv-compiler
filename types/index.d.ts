@@ -9,6 +9,16 @@ type AjvSerializerGenerator = typeof AjvCompiler
 type AjvJTDCompile = AjvJTD['compileSerializer']
 type AjvCompile = (schema: AnySchema, _meta?: boolean) => AnyValidateFunction
 
+declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
+declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
+
+declare function buildSerializerFromPool (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
+
+declare function AjvCompiler (opts: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
+declare function AjvCompiler (opts?: { jtdSerializer?: false }): AjvCompiler.BuildCompilerFromPool
+
+declare function StandaloneValidator (options: AjvCompiler.StandaloneOptions): AjvCompiler.BuildCompilerFromPool
+
 declare namespace AjvCompiler {
   export type { Options, ErrorObject }
   export { Ajv }
@@ -58,15 +68,5 @@ declare namespace AjvCompiler {
   export const AjvCompiler: AjvSerializerGenerator
   export { AjvCompiler as default }
 }
-
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
-
-declare function buildSerializerFromPool (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
-
-declare function AjvCompiler (opts: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
-declare function AjvCompiler (opts?: { jtdSerializer?: false }): AjvCompiler.BuildCompilerFromPool
-
-declare function StandaloneValidator (options: AjvCompiler.StandaloneOptions): AjvCompiler.BuildCompilerFromPool
 
 export = AjvCompiler
