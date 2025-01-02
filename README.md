@@ -6,7 +6,7 @@
 
 This module manages the [`ajv`](https://www.npmjs.com/package/ajv) instances for the Fastify framework.
 It isolates the `ajv` dependency so that the AJV version is not tightly coupled to the Fastify version.
-This allows the user to decide which version of AJV to use in their Fastify based application.
+This allows the user to decide which version of AJV to use in their Fastify-based application.
 
 
 ## Versions
@@ -38,13 +38,13 @@ The Fastify's default [`ajv` options](https://github.com/ajv-validator/ajv/tree/
 Moreover, the [`ajv-formats`](https://www.npmjs.com/package/ajv-formats) module is included by default.
 If you need to customize it, check the _usage_ section below.
 
-To customize the `ajv`'s options, see how in the [Fastify official docs](https://fastify.dev/docs/latest/Reference/Server/#ajv).
+To customize the `ajv` options, see how in the [Fastify documentation](https://fastify.dev/docs/latest/Reference/Server/#ajv).
 
 
 ## Usage
 
 This module is already used as default by Fastify.
-If you need to provide to your server instance a different version, refer to [the official doc](https://fastify.dev/docs/latest/Reference/Server/#schemacontroller).
+If you need to provide your server instance with a different version, refer to [the Fastify docs](https://fastify.dev/docs/latest/Reference/Server/#schemacontroller).
 
 ### Customize the `ajv-formats` plugin
 
@@ -66,7 +66,7 @@ In this way, your setup will have precedence over the `@fastify/ajv-compiler` de
 ### Customize the `ajv` instance
 
 If you need to customize the `ajv` instance and take full control of its configuration, you can do it by
-using the `onCreate` option in the Fastify configuration that accepts a syncronous function that receives the `ajv` instance:
+using the `onCreate` option in the Fastify configuration that accepts a synchronous function that receives the `ajv` instance:
 
 ```js
 const app = fastify({
@@ -102,7 +102,7 @@ const app = fastify({
 })
 ```
 
-The defaults AJV JTD options are the same as the [Fastify's default options](#AJV-Configuration).
+The default AJV JTD options are the same as [Fastify's default options](#AJV-Configuration).
 
 #### Fastify with JTD and serialization
 
@@ -130,7 +130,7 @@ const app = fastify({
 
 ### AJV Standalone
 
-AJV v8 introduces the [standalone feature](https://ajv.js.org/standalone.html) that let you to pre-compile your schemas and use them in your application for a faster startup.
+AJV v8 introduced a [standalone feature](https://ajv.js.org/standalone.html) that lets you pre-compile your schemas and use them in your application for a faster startup.
 
 To use this feature, you must be aware of the following:
 
@@ -145,7 +145,7 @@ To accomplish this, you must use a new compiler: `StandaloneValidator`.
 
 You must provide 2 parameters to this compiler:
 
-- `readMode: false`: a boolean to indicate that you want generate the schemas functions string.
+- `readMode: false`: a boolean to indicate that you want to generate the schemas functions string.
 - `storeFunction`" a sync function that must store the source code of the schemas functions. You may provide an async function too, but you must manage errors.
 
 When `readMode: false`, **the compiler is meant to be used in development ONLY**.
@@ -185,7 +185,7 @@ app.ready().then(() => {
 At this stage, you should have a file for every route's schema.
 To use them, you must use the `StandaloneValidator` with the parameters:
 
-- `readMode: true`: a boolean to indicate that you want read and use the schemas functions string.
+- `readMode: true`: a boolean to indicate that you want to read and use the schemas functions string.
 - `restoreFunction`" a sync function that must return a function to validate the route.
 
 Important keep away before you continue reading the documentation:
@@ -220,16 +220,16 @@ app.listen({ port: 3000 })
 
 ### How it works
 
-This module provide a factory function to produce [Validator Compilers](https://fastify.dev/docs/latest/Reference/Server/#validatorcompiler) functions.
+This module provides a factory function to produce [Validator Compilers](https://fastify.dev/docs/latest/Reference/Server/#validatorcompiler) functions.
 
 The Fastify factory function is just one per server instance and it is called for every encapsulated context created by the application through the `fastify.register()` call.
 
-Every Validator Compiler produced, has a dedicated AJV instance, so, this factory will try to produce as less as possible AJV instances to reduce the memory footprint and the startup time.
+Every Validator Compiler produced has a dedicated AJV instance, so this factory will try to produce as less as possible AJV instances to reduce the memory footprint and the startup time.
 
 The variables involved to choose if a Validator Compiler can be reused are:
 
 - the AJV configuration: it is [one per server](https://fastify.dev/docs/latest/Reference/Server/#ajv)
-- the external JSON schemas: once a new schema is added to a fastify's context, calling `fastify.addSchema()`, it will cause a new AJV inizialization
+- the external JSON schemas: once a new schema is added to a fastify's context, calling `fastify.addSchema()`, it will cause a new AJV initialization
 
 
 ## License
