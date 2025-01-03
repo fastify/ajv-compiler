@@ -1,5 +1,5 @@
-import { AnySchema, default as _ajv, Options as AjvOptions, ValidateFunction } from 'ajv'
-import { default as AjvJTD, JTDOptions } from 'ajv/dist/jtd'
+import _ajv, { AnySchema, Options as AjvOptions, ValidateFunction } from 'ajv'
+import AjvJTD, { JTDOptions } from 'ajv/dist/jtd'
 import type { Options, ErrorObject } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
 
