@@ -1,6 +1,6 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const AjvCompiler = require('../index')
 
 const postSchema = Object.freeze({
@@ -37,23 +37,19 @@ const fastifyAjvOptionsDefault = Object.freeze({
   customOptions: {}
 })
 
-t.test('must not store schema on compile', t => {
-  t.plan(4)
+test('must not store schema on compile', t => {
+  t.plan(5)
   const factory = AjvCompiler()
   const compiler = factory({}, fastifyAjvOptionsDefault)
   const postFn = compiler({ schema: postSchema })
   const patchFn = compiler({ schema: patchSchema })
 
   const resultForPost = postFn({})
-  t.equal(resultForPost, false)
-  t.has(postFn.errors, [
-    {
-      keyword: 'required',
-      message: "must have required property 'username'"
-    }
-  ])
+  t.assert.deepStrictEqual(resultForPost, false)
+  t.assert.deepStrictEqual(postFn.errors[0].keyword, 'required')
+  t.assert.deepStrictEqual(postFn.errors[0].message, "must have required property 'username'")
 
   const resultForPatch = patchFn({})
-  t.ok(resultForPatch)
-  t.notOk(patchFn.errors)
+  t.assert.ok(resultForPatch)
+  t.assert.ok(!patchFn.errors)
 })

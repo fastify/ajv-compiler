@@ -1,6 +1,6 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
 
@@ -8,7 +8,7 @@ const ajvFormats = require('ajv-formats')
 const ajvErrors = require('ajv-errors')
 const localize = require('ajv-i18n')
 
-t.test('Format Baseline test', async (t) => {
+test('Format Baseline test', async (t) => {
   const app = buildApplication({
     customOptions: {
       validateFormats: false
@@ -28,12 +28,12 @@ t.test('Format Baseline test', async (t) => {
       email: 'not an email'
     }
   })
-  t.equal(res.statusCode, 200, 'format validation does not apply as configured')
-  t.equal(res.payload, 'hello')
+  t.assert.deepStrictEqual(res.statusCode, 200, 'format validation does not apply as configured')
+  t.assert.deepStrictEqual(res.payload, 'hello')
 })
 
-t.test('Custom Format plugin loading test', (t) => {
-  t.plan(6)
+test('Custom Format plugin loading test', async (t) => {
+  t.plan(3)
   const app = buildApplication({
     customOptions: {
       validateFormats: true
@@ -41,17 +41,13 @@ t.test('Custom Format plugin loading test', (t) => {
     plugins: [[ajvFormats, { mode: 'fast' }]]
   })
 
-  app.inject('/hello', (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400, 'format validation applies')
-  })
+  const res = await app.inject('/hello')
+  t.assert.deepStrictEqual(res.statusCode, 400, 'format validation applies')
 
-  app.inject('/2ad0612c-7578-4b18-9a6f-579863f40e0b', (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400, 'format validation applies')
-  })
+  const res1 = await app.inject('/2ad0612c-7578-4b18-9a6f-579863f40e0b')
+  t.assert.deepStrictEqual(res1.statusCode, 400, 'format validation applies')
 
-  app.inject({
+  const res2 = await app.inject({
     url: '/2ad0612c-7578-4b18-9a6f-579863f40e0b',
     headers: {
       'x-foo': 'hello',
@@ -63,27 +59,21 @@ t.test('Custom Format plugin loading test', (t) => {
       date: new Date().toISOString(),
       email: 'foo@bar.baz'
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.deepStrictEqual(res2.statusCode, 200)
 })
 
-t.test('Format plugin set by default test', (t) => {
-  t.plan(6)
+test('Format plugin set by default test', async (t) => {
+  t.plan(3)
   const app = buildApplication({})
 
-  app.inject('/hello', (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400, 'format validation applies')
-  })
+  const res = await app.inject('/hello')
+  t.assert.deepStrictEqual(res.statusCode, 400, 'format validation applies')
 
-  app.inject('/2ad0612c-7578-4b18-9a6f-579863f40e0b', (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400, 'format validation applies')
-  })
+  const res1 = await app.inject('/2ad0612c-7578-4b18-9a6f-579863f40e0b')
+  t.assert.deepStrictEqual(res1.statusCode, 400, 'format validation applies')
 
-  app.inject({
+  const res2 = await app.inject({
     url: '/2ad0612c-7578-4b18-9a6f-579863f40e0b',
     headers: {
       'x-foo': 'hello',
@@ -95,14 +85,12 @@ t.test('Format plugin set by default test', (t) => {
       date: new Date().toISOString(),
       email: 'foo@bar.baz'
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.deepStrictEqual(res2.statusCode, 200)
 })
 
-t.test('Custom error messages', (t) => {
-  t.plan(9)
+test('Custom error messages', async (t) => {
+  t.plan(6)
 
   const app = buildApplication({
     customOptions: {
@@ -120,7 +108,7 @@ t.test('Custom error messages', (t) => {
   }
 
   app.post('/', {
-    handler: () => { t.fail('dont call me') },
+    handler: () => { t.assert.fail('dont call me') },
     schema: {
       body: {
         type: 'object',
@@ -134,39 +122,34 @@ t.test('Custom error messages', (t) => {
     }
   })
 
-  app.inject({
+  const res = await app.inject({
     url: '/',
     method: 'post',
     payload: {}
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.match(res.json().message, errorMessage.required)
   })
+  t.assert.deepStrictEqual(res.statusCode, 400)
+  t.assert.ok(res.json().message.includes(errorMessage.required))
 
-  app.inject({
+  const res1 = await app.inject({
     url: '/',
     method: 'post',
     payload: { foo: 'not a number' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.match(res.json().message, errorMessage.type)
   })
+  t.assert.deepStrictEqual(res1.statusCode, 400)
+  t.assert.ok(res1.json().message.includes(errorMessage.type))
 
-  app.inject({
+  const res2 = await app.inject({
     url: '/',
     method: 'post',
     payload: { foo: 3, bar: 'ops' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.match(res.json().message, errorMessage.additionalProperties)
   })
+
+  t.assert.deepStrictEqual(res2.statusCode, 400)
+  t.assert.ok(res2.json().message.includes(errorMessage.additionalProperties))
 })
 
-t.test('Custom i18n error messages', (t) => {
-  t.plan(3)
+test('Custom i18n error messages', async (t) => {
+  t.plan(2)
 
   const app = buildApplication({
     customOptions: {
@@ -177,7 +160,7 @@ t.test('Custom i18n error messages', (t) => {
   })
 
   app.post('/', {
-    handler: () => { t.fail('dont call me') },
+    handler: () => { t.assert.fail('dont call me') },
     schema: {
       body: {
         type: 'object',
@@ -190,25 +173,24 @@ t.test('Custom i18n error messages', (t) => {
   })
 
   app.setErrorHandler((error, request, reply) => {
-    t.pass('Error handler executed')
+    t.assert.ok('Error handler executed')
     if (error.validation) {
       localize.ru(error.validation)
       reply.status(400).send(error.validation)
       return
     }
-    t.fail('not other errors')
+    t.assert.fail('not other errors')
   })
 
-  app.inject({
+  const res = await app.inject({
     method: 'POST',
     url: '/',
     payload: {
       foo: 'string'
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.json()[0].message, 'должно быть integer')
   })
+
+  t.assert.deepStrictEqual(res.json()[0].message, 'должно быть integer')
 })
 
 function buildApplication (ajvOptions) {

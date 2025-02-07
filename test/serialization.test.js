@@ -1,6 +1,6 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
 
@@ -38,18 +38,18 @@ const fastifyAjvOptionsDefault = Object.freeze({
   customOptions: {}
 })
 
-t.test('basic serializer usage', t => {
+test('basic serializer usage', t => {
   t.plan(4)
   const factory = AjvCompiler({ jtdSerializer: true })
   const compiler = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const serializeFunc = compiler({ schema: jtdSchema })
-  t.equal(serializeFunc({ version: '1', foo: 42 }), '{"version":"1","foo":42}')
-  t.equal(serializeFunc({ version: '2', foo: 'hello' }), '{"version":"2","foo":"hello"}')
-  t.equal(serializeFunc({ version: '3', foo: 'hello' }), '{"version":"3"}')
-  t.equal(serializeFunc({ version: '2', foo: ['not', 1, { string: 'string' }] }), '{"version":"2","foo":"not,1,[object Object]"}')
+  t.assert.deepStrictEqual(serializeFunc({ version: '1', foo: 42 }), '{"version":"1","foo":42}')
+  t.assert.deepStrictEqual(serializeFunc({ version: '2', foo: 'hello' }), '{"version":"2","foo":"hello"}')
+  t.assert.deepStrictEqual(serializeFunc({ version: '3', foo: 'hello' }), '{"version":"3"}')
+  t.assert.deepStrictEqual(serializeFunc({ version: '2', foo: ['not', 1, { string: 'string' }] }), '{"version":"2","foo":"not,1,[object Object]"}')
 })
 
-t.test('external schemas are ignored', t => {
+test('external schemas are ignored', t => {
   t.plan(1)
   const factory = AjvCompiler({ jtdSerializer: true })
   const compiler = factory(externalSchemas2, fastifyAjvOptionsDefault)
@@ -69,13 +69,13 @@ t.test('external schemas are ignored', t => {
       }
     }
   })
-  t.equal(serializeFunc(
+  t.assert.deepStrictEqual(serializeFunc(
     { userLoc: { lat: 50, lng: -90 }, serverLoc: { lat: -15, lng: 50 } }),
   '{"userLoc":{"lat":50,"lng":-90},"serverLoc":{"lat":-15,"lng":50}}'
   )
 })
 
-t.test('fastify integration within JTD serializer', async t => {
+test('fastify integration within JTD serializer', async t => {
   const factoryValidator = AjvCompiler()
   const factorySerializer = AjvCompiler({ jtdSerializer: true })
 
@@ -128,8 +128,8 @@ t.test('fastify integration within JTD serializer', async t => {
       }
     })
 
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { version: 'undefined' })
+    t.assert.deepStrictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { version: 'undefined' })
   }
 
   {
@@ -142,8 +142,8 @@ t.test('fastify integration within JTD serializer', async t => {
       }
     })
 
-    t.equal(res.statusCode, 200)
-    t.same(res.json(), {
+    t.assert.deepStrictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), {
       id: '123',
       createdAt: '1999-01-31T23:00:00.000Z',
       karma: 42,
@@ -152,7 +152,7 @@ t.test('fastify integration within JTD serializer', async t => {
   }
 })
 
-t.test('fastify integration and cached serializer', async t => {
+test('fastify integration and cached serializer', async t => {
   const factoryValidator = AjvCompiler()
   const factorySerializer = AjvCompiler({ jtdSerializer: true })
 
@@ -218,8 +218,8 @@ t.test('fastify integration and cached serializer', async t => {
       }
     })
 
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { version: 'undefined' })
+    t.assert.deepStrictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { version: 'undefined' })
   }
 
   {
@@ -232,8 +232,8 @@ t.test('fastify integration and cached serializer', async t => {
       }
     })
 
-    t.equal(res.statusCode, 200)
-    t.same(res.json(), {
+    t.assert.deepStrictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), {
       id: '123',
       createdAt: '1999-01-31T23:00:00.000Z',
       karma: 42,
@@ -242,7 +242,7 @@ t.test('fastify integration and cached serializer', async t => {
   }
 })
 
-t.test('fastify integration within JTD serializer and custom options', async t => {
+test('fastify integration within JTD serializer and custom options', async t => {
   const factorySerializer = AjvCompiler({ jtdSerializer: true })
 
   const app = fastify({
@@ -272,8 +272,8 @@ t.test('fastify integration within JTD serializer and custom options', async t =
 
   try {
     await app.ready()
-    t.fail('should throw')
+    t.assert.fail('should throw')
   } catch (error) {
-    t.equal(error.message, 'logger must implement log, warn and error methods', 'the wrong setting is forwarded to ajv/jtd')
+    t.assert.deepStrictEqual(error.message, 'logger must implement log, warn and error methods', 'the wrong setting is forwarded to ajv/jtd')
   }
 })
