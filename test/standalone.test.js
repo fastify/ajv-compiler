@@ -2,7 +2,7 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
-const t = require('tap')
+const { test } = require('node:test')
 const fastify = require('fastify')
 const sanitize = require('sanitize-filename')
 
@@ -14,10 +14,10 @@ function generateFileName (routeOpts) {
 
 const generatedFileNames = []
 
-t.test('standalone', t => {
+test('standalone', async t => {
   t.plan(4)
 
-  t.teardown(async () => {
+  t.after(async () => {
     for (const fileName of generatedFileNames) {
       await fs.promises.unlink(path.join(__dirname, fileName))
     }
@@ -25,10 +25,10 @@ t.test('standalone', t => {
 
   t.test('errors', t => {
     t.plan(2)
-    t.throws(() => {
+    t.assert.throws(() => {
       AjvStandaloneValidator()
     }, 'missing restoreFunction')
-    t.throws(() => {
+    t.assert.throws(() => {
       AjvStandaloneValidator({ readMode: false })
     }, 'missing storeFunction')
   })
@@ -70,29 +70,29 @@ t.test('standalone', t => {
     const factory = AjvStandaloneValidator({
       readMode: false,
       storeFunction (routeOpts, schemaValidationCode) {
-        t.same(routeOpts, endpointSchema)
-        t.type(schemaValidationCode, 'string')
+        t.assert.deepStrictEqual(routeOpts, endpointSchema)
+        t.assert.ok(typeof schemaValidationCode === 'string')
         fs.writeFileSync(path.join(__dirname, '/ajv-generated.js'), schemaValidationCode)
         generatedFileNames.push('/ajv-generated.js')
-        t.pass('stored the validation function')
+        t.assert.ok('stored the validation function')
       }
     })
 
     const compiler = factory(schemaMap)
     compiler(endpointSchema)
-    t.pass('compiled the endpoint schema')
+    t.assert.ok('compiled the endpoint schema')
 
     t.test('usage standalone code', t => {
       t.plan(3)
       const standaloneValidate = require('./ajv-generated')
 
       const valid = standaloneValidate({ hello: 'world' })
-      t.ok(valid)
+      t.assert.ok(valid)
 
       const invalid = standaloneValidate({ hello: [] })
-      t.notOk(invalid)
+      t.assert.ok(!invalid)
 
-      t.ok(standaloneValidate)
+      t.assert.ok(standaloneValidate)
     })
   })
 
@@ -103,13 +103,13 @@ t.test('standalone', t => {
       readMode: false,
       storeFunction (routeOpts, schemaValidationCode) {
         const fileName = generateFileName(routeOpts)
-        t.ok(routeOpts)
+        t.assert.ok(routeOpts)
         fs.writeFileSync(path.join(__dirname, fileName), schemaValidationCode)
-        t.pass('stored the validation function')
+        t.assert.ok('stored the validation function')
         generatedFileNames.push(fileName)
       },
       restoreFunction () {
-        t.fail('write mode ON')
+        t.assert.fail('write mode ON')
       }
     })
 
@@ -117,16 +117,16 @@ t.test('standalone', t => {
     await app.ready()
   })
 
-  t.test('fastify integration - readMode', async t => {
+  await t.test('fastify integration - readMode', async t => {
     t.plan(6)
 
     const factory = AjvStandaloneValidator({
       readMode: true,
       storeFunction () {
-        t.fail('read mode ON')
+        t.assert.fail('read mode ON')
       },
       restoreFunction (routeOpts) {
-        t.pass('restore the validation function')
+        t.assert.ok('restore the validation function')
         const fileName = generateFileName(routeOpts)
         return require(path.join(__dirname, fileName))
       }
@@ -140,19 +140,19 @@ t.test('standalone', t => {
       method: 'POST',
       payload: { hello: [] }
     })
-    t.equal(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.statusCode, 400)
 
     res = await app.inject({
       url: '/bar?lang=invalid',
       method: 'GET'
     })
-    t.equal(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.statusCode, 400)
 
     res = await app.inject({
       url: '/bar?lang=it',
       method: 'GET'
     })
-    t.equal(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.statusCode, 200)
   })
 
   function buildApp (factory) {

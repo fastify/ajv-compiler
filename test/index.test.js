@@ -1,6 +1,6 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const fastify = require('fastify')
 const AjvCompiler = require('../index')
 
@@ -45,16 +45,16 @@ const fastifyAjvOptionsCustom = Object.freeze({
   ]
 })
 
-t.test('basic usage', t => {
+test('basic usage', t => {
   t.plan(1)
   const factory = AjvCompiler()
   const compiler = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const validatorFunc = compiler({ schema: sampleSchema })
   const result = validatorFunc({ name: 'hello' })
-  t.equal(result, true)
+  t.assert.deepStrictEqual(result, true)
 })
 
-t.test('array coercion', t => {
+test('array coercion', t => {
   t.plan(2)
   const factory = AjvCompiler()
   const compiler = factory(externalSchemas1, fastifyAjvOptionsDefault)
@@ -70,11 +70,11 @@ t.test('array coercion', t => {
   const validatorFunc = compiler({ schema: arraySchema })
 
   const inputObj = { name: 'hello' }
-  t.equal(validatorFunc(inputObj), true)
-  t.same(inputObj, { name: ['hello'] }, 'the name property should be coerced to an array')
+  t.assert.deepStrictEqual(validatorFunc(inputObj), true)
+  t.assert.deepStrictEqual(inputObj, { name: ['hello'] }, 'the name property should be coerced to an array')
 })
 
-t.test('nullable default', t => {
+test('nullable default', t => {
   t.plan(2)
   const factory = AjvCompiler()
   const compiler = factory({}, fastifyAjvOptionsDefault)
@@ -89,11 +89,11 @@ t.test('nullable default', t => {
   })
   const input = { nullable: null, notNullable: null }
   const result = validatorFunc(input)
-  t.equal(result, true)
-  t.same(input, { nullable: null, notNullable: '' }, 'the notNullable field has been coerced')
+  t.assert.deepStrictEqual(result, true)
+  t.assert.deepStrictEqual(input, { nullable: null, notNullable: '' }, 'the notNullable field has been coerced')
 })
 
-t.test('plugin loading', t => {
+test('plugin loading', t => {
   t.plan(3)
   const factory = AjvCompiler()
   const compiler = factory(externalSchemas1, fastifyAjvOptionsCustom)
@@ -113,30 +113,30 @@ t.test('plugin loading', t => {
     }
   })
   const result = validatorFunc({ q: '2016-10-02' })
-  t.equal(result, true)
+  t.assert.deepStrictEqual(result, true)
 
   const resultFail = validatorFunc({})
-  t.equal(resultFail, false)
-  t.equal(validatorFunc.errors[0].message, 'hello world')
+  t.assert.deepStrictEqual(resultFail, false)
+  t.assert.deepStrictEqual(validatorFunc.errors[0].message, 'hello world')
 })
 
-t.test('optimization - cache ajv instance', t => {
+test('optimization - cache ajv instance', t => {
   t.plan(5)
   const factory = AjvCompiler()
   const compiler1 = factory(externalSchemas1, fastifyAjvOptionsDefault)
   const compiler2 = factory(externalSchemas1, fastifyAjvOptionsDefault)
-  t.equal(compiler1, compiler2, 'same instance')
-  t.same(compiler1, compiler2, 'same instance')
+  t.assert.deepStrictEqual(compiler1, compiler2, 'same instance')
+  t.assert.deepStrictEqual(compiler1, compiler2, 'same instance')
 
   const compiler3 = factory(externalSchemas2, fastifyAjvOptionsDefault)
-  t.not(compiler3, compiler1, 'new ajv instance when externa schema change')
+  t.assert.notEqual(compiler3, compiler1, 'new ajv instance when externa schema change')
 
   const compiler4 = factory(externalSchemas1, fastifyAjvOptionsCustom)
-  t.not(compiler4, compiler1, 'new ajv instance when externa schema change')
-  t.not(compiler4, compiler3, 'new ajv instance when externa schema change')
+  t.assert.notEqual(compiler4, compiler1, 'new ajv instance when externa schema change')
+  t.assert.notEqual(compiler4, compiler3, 'new ajv instance when externa schema change')
 })
 
-t.test('the onCreate callback can enhance the ajv instance', t => {
+test('the onCreate callback can enhance the ajv instance', t => {
   t.plan(2)
   const factory = AjvCompiler()
 
@@ -161,14 +161,14 @@ t.test('the onCreate callback can enhance the ajv instance', t => {
     }
   })
   const result = validatorFunc('foo')
-  t.equal(result, true)
+  t.assert.deepStrictEqual(result, true)
 
   const resultFail = validatorFunc('2016-10-02')
-  t.equal(resultFail, false)
+  t.assert.deepStrictEqual(resultFail, false)
 })
 
 // https://github.com/fastify/fastify/pull/2969
-t.test('compile same $id when in external schema', t => {
+test('compile same $id when in external schema', t => {
   t.plan(3)
   const factory = AjvCompiler()
 
@@ -197,7 +197,7 @@ t.test('compile same $id when in external schema', t => {
 
   }, fastifyAjvOptionsDefault)
 
-  t.notOk(compiler[sym], 'the ajv reference do not exists if code is not activated')
+  t.assert.ok(!compiler[sym], 'the ajv reference do not exists if code is not activated')
 
   const validatorFunc1 = compiler({
     schema: {
@@ -211,11 +211,11 @@ t.test('compile same $id when in external schema', t => {
     }
   })
 
-  t.pass('the compile does not fail if the schema compiled is already in the external schemas')
-  t.equal(validatorFunc1, validatorFunc2, 'the returned function is the same')
+  t.assert.ok('the compile does not fail if the schema compiled is already in the external schemas')
+  t.assert.deepStrictEqual(validatorFunc1, validatorFunc2, 'the returned function is the same')
 })
 
-t.test('JTD MODE', t => {
+test('JTD MODE', async t => {
   t.plan(2)
 
   t.test('compile jtd schema', t => {
@@ -240,23 +240,23 @@ t.test('JTD MODE', t => {
 
     const compiler = factory({}, fastifyJtdDefault)
     const validatorFunc = compiler({ schema: jtdSchema })
-    t.pass('generated validation function for JTD SCHEMA')
+    t.assert.ok('generated validation function for JTD SCHEMA')
 
     const result = validatorFunc({
       version: '2',
       foo: []
     })
-    t.notOk(result, 'failed validation')
-    t.type(validatorFunc.errors, 'Array')
+    t.assert.ok(!result, 'failed validation')
+    t.assert.ok(validatorFunc.errors instanceof Array)
 
     const success = validatorFunc({
       version: '1',
       foo: 42
     })
-    t.ok(success)
+    t.assert.ok(success)
   })
 
-  t.test('fastify integration', async t => {
+  await t.test('fastify integration', async t => {
     const factory = AjvCompiler()
 
     const app = fastify({
@@ -301,7 +301,7 @@ t.test('JTD MODE', t => {
       }
     })
 
-    t.equal(res.statusCode, 400)
-    t.equal(res.json().message, 'body/foo must be uint8')
+    t.assert.deepStrictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json().message, 'body/foo must be uint8')
   })
 })

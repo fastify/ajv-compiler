@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "unit": "tap",
+    "unit": "c8 --100 node --test",
     "test": "npm run unit && npm run test:typescript",
     "test:typescript": "tsd",
     "ajv:compile": "ajv compile -s test/source.json -o test/validate_schema.js"
@@ -67,13 +67,13 @@
     "ajv-errors": "^3.0.0",
     "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
+    "c8": "^10.1.3",
     "cronometro": "^4.0.0",
     "eslint": "^9.17.0",
     "fastify": "^5.0.0",
     "neostandard": "^0.12.0",
     "require-from-string": "^2.0.2",
     "sanitize-filename": "^1.6.3",
-    "tap": "^19.0.0",
     "tsd": "^0.31.0"
   },
   "dependencies": {
