@@ -37,19 +37,23 @@ const fastifyAjvOptionsDefault = Object.freeze({
   customOptions: {}
 })
 
-test('must not store schema on compile', t => {
-  t.plan(5)
-  const factory = AjvCompiler()
-  const compiler = factory({}, fastifyAjvOptionsDefault)
-  const postFn = compiler({ schema: postSchema })
-  const patchFn = compiler({ schema: patchSchema })
+for (const mode of [undefined, '2019', '2020']) {
+  test(`mode: ${mode ?? 'default'}`, async (t) => {
+    await t.test('must not store schema on compile', t => {
+      t.plan(5)
+      const factory = AjvCompiler()
+      const compiler = factory({}, fastifyAjvOptionsDefault)
+      const postFn = compiler({ schema: postSchema })
+      const patchFn = compiler({ schema: patchSchema })
 
-  const resultForPost = postFn({})
-  t.assert.deepStrictEqual(resultForPost, false)
-  t.assert.deepStrictEqual(postFn.errors[0].keyword, 'required')
-  t.assert.deepStrictEqual(postFn.errors[0].message, "must have required property 'username'")
+      const resultForPost = postFn({})
+      t.assert.deepStrictEqual(resultForPost, false)
+      t.assert.deepStrictEqual(postFn.errors[0].keyword, 'required')
+      t.assert.deepStrictEqual(postFn.errors[0].message, "must have required property 'username'")
 
-  const resultForPatch = patchFn({})
-  t.assert.ok(resultForPatch)
-  t.assert.ok(!patchFn.errors)
-})
+      const resultForPatch = patchFn({})
+      t.assert.ok(resultForPatch)
+      t.assert.ok(!patchFn.errors)
+    })
+  })
+}
