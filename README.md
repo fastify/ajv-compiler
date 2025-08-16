@@ -79,9 +79,13 @@ const app = fastify({
 })
 ```
 
-### Fastify with Ajv2019 or Ajv2020
+### Fastify with different JSON Schema version
 
-If you want to use Ajv2019 or Ajv2020 for newer JSON Schema features, you can do it be passing the `ajv.mode` option.
+By providing the `ajv.mode` option
+it is possible to select a [different JSON Schema version](https://ajv.js.org/json-schema.html#json-schema-versions)
+for newer features.
+
+By default the `draft-07` is used.
 
 ```js
 const app = fastify({
