@@ -79,6 +79,24 @@ const app = fastify({
 })
 ```
 
+### Fastify with different JSON Schema version
+
+By providing the `ajv.mode` option
+it is possible to select a [different JSON Schema version](https://ajv.js.org/json-schema.html#json-schema-versions)
+for newer features.
+
+By default the `draft-07` is used.
+
+```js
+const app = fastify({
+  ajv: {
+    mode: '2019' // or '2020'
+  }
+})
+
+// app uses Ajv2019 for validation
+```
+
 ### Fastify with JTD
 
 The [JSON Type Definition](https://jsontypedef.com/) feature is supported by AJV v8.x and you can benefit from it in your Fastify application.
