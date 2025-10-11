@@ -224,3 +224,22 @@ expectType<Symbol>(AjvReference)
   expectAssignable<ValidatorCompiler>(compiler)
   expectType<AnyValidateFunction<any>>(compiler(endpointSchema))
 }
+
+// Plugins
+{
+  const factory = AjvCompiler()
+  const compiler = factory({}, {
+    plugins: [
+      (ajv) => {
+        expectType<import('ajv').default>(ajv)
+        return ajv
+      },
+      (ajv, options) => {
+        expectType<import('ajv').default>(ajv)
+        expectType<unknown>(options)
+        return ajv
+      }
+    ]
+  })
+  expectAssignable<ValidatorCompiler>(compiler)
+}

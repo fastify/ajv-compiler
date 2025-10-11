@@ -1,4 +1,4 @@
-import _ajv, { AnySchema, Options as AjvOptions, ValidateFunction } from 'ajv'
+import _ajv, { AnySchema, Options as AjvOptions, ValidateFunction, Plugin } from 'ajv'
 import AjvJTD, { JTDOptions } from 'ajv/dist/jtd'
 import type { Options, ErrorObject } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
@@ -9,8 +9,13 @@ type AjvSerializerGenerator = typeof AjvCompiler
 type AjvJTDCompile = AjvJTD['compileSerializer']
 type AjvCompile = (schema: AnySchema, _meta?: boolean) => AnyValidateFunction
 
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode: 'JTD'; customOptions?: JTDOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: { mode?: never; customOptions?: AjvOptions; onCreate?: (ajvInstance: Ajv) => void }): AjvCompile
+type SharedCompilerOptions = {
+  onCreate?: (ajvInstance: Ajv) => void;
+  plugins?: Plugin<unknown>[];
+}
+
+declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode: 'JTD'; customOptions?: JTDOptions }): AjvCompile
+declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode?: never; customOptions?: AjvOptions }): AjvCompile
 
 declare function buildSerializerFromPool (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
 
