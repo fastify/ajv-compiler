@@ -14,10 +14,10 @@ type SharedCompilerOptions = {
   plugins?: Plugin<unknown>[];
 }
 
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode: 'JTD'; customOptions?: JTDOptions }): AjvCompile
-declare function buildCompilerFromPool (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode?: never; customOptions?: AjvOptions }): AjvCompile
+type BuildAjvJtdCompilerFromPool = (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode: 'JTD'; customOptions?: JTDOptions }) => AjvCompile
+type BuildAjvCompilerFromPool = (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode?: never; customOptions?: AjvOptions }) => AjvCompile
 
-declare function buildSerializerFromPool (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions): AjvJTDCompile
+type BuildJtdSerializerFromPool = (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions) => AjvJTDCompile
 
 declare function AjvCompiler (opts: { jtdSerializer: true }): AjvCompiler.BuildSerializerFromPool
 declare function AjvCompiler (opts?: { jtdSerializer?: false }): AjvCompiler.BuildCompilerFromPool
@@ -28,9 +28,9 @@ declare namespace AjvCompiler {
   export type { Options, ErrorObject }
   export { Ajv }
 
-  export type BuildSerializerFromPool = typeof buildSerializerFromPool
+  export type BuildSerializerFromPool = BuildJtdSerializerFromPool
 
-  export type BuildCompilerFromPool = typeof buildCompilerFromPool
+  export type BuildCompilerFromPool = BuildAjvCompilerFromPool & BuildAjvJtdCompilerFromPool
 
   export const AjvReference: Symbol
 
