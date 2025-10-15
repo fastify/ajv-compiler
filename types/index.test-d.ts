@@ -238,7 +238,19 @@ expectType<Symbol>(AjvReference)
         expectType<import('ajv').default>(ajv)
         expectType<unknown>(options)
         return ajv
-      }
+      },
+      [
+        (ajv) => {
+          expectType<import('ajv').default>(ajv)
+          return ajv
+        }, ['keyword1', 'keyword2']
+      ],
+      [
+        (ajv) => {
+          expectType<import('ajv').default>(ajv)
+          return ajv
+        }, [{ key: 'value' }]
+      ],
     ]
   })
   expectAssignable<ValidatorCompiler>(compiler)

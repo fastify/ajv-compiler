@@ -11,7 +11,7 @@ type AjvCompile = (schema: AnySchema, _meta?: boolean) => AnyValidateFunction
 
 type SharedCompilerOptions = {
   onCreate?: (ajvInstance: Ajv) => void;
-  plugins?: Plugin<unknown>[];
+  plugins?: (Plugin<unknown> | [Plugin<unknown>, unknown])[];
 }
 
 type BuildAjvJtdCompilerFromPool = (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode: 'JTD'; customOptions?: JTDOptions }) => AjvCompile
