@@ -13,9 +13,19 @@ type SharedCompilerOptions = {
   onCreate?: (ajvInstance: Ajv) => void;
   plugins?: (Plugin<unknown> | [Plugin<unknown>, unknown])[];
 }
+type JdtCompilerOptions = SharedCompilerOptions & {
+  mode: 'JTD';
+  customOptions?: JTDOptions
+}
+type AjvCompilerOptions = SharedCompilerOptions & {
+  mode?: never;
+  customOptions?: AjvOptions
+}
 
-type BuildAjvJtdCompilerFromPool = (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode: 'JTD'; customOptions?: JTDOptions }) => AjvCompile
-type BuildAjvCompilerFromPool = (externalSchemas: { [key: string]: AnySchema | AnySchema[] }, options?: SharedCompilerOptions & { mode?: never; customOptions?: AjvOptions }) => AjvCompile
+type BuildAjvOrJdtCompilerFromPool = (
+  externalSchemas: { [key: string]: AnySchema | AnySchema[] },
+  options?: JdtCompilerOptions | AjvCompilerOptions
+) => AjvCompile
 
 type BuildJtdSerializerFromPool = (externalSchemas: any, serializerOpts?: { mode?: never; } & JTDOptions) => AjvJTDCompile
 
@@ -30,7 +40,7 @@ declare namespace AjvCompiler {
 
   export type BuildSerializerFromPool = BuildJtdSerializerFromPool
 
-  export type BuildCompilerFromPool = BuildAjvCompilerFromPool & BuildAjvJtdCompilerFromPool
+  export type BuildCompilerFromPool = BuildAjvOrJdtCompilerFromPool
 
   export const AjvReference: Symbol
 

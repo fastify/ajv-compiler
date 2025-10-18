@@ -2,6 +2,7 @@ import { AnySchemaObject, ValidateFunction } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
 import { expectAssignable, expectType } from 'tsd'
 import AjvCompiler, { AjvReference, ValidatorFactory, StandaloneValidator, RouteDefinition, ErrorObject, BuildCompilerFromPool, BuildSerializerFromPool, ValidatorCompiler } from '..'
+import type Ajv from 'ajv'
 
 {
   const compiler = AjvCompiler({})
@@ -228,30 +229,74 @@ expectType<Symbol>(AjvReference)
 // Plugins
 {
   const factory = AjvCompiler()
+  const compilerFactoryParams = {
+    customOptions: {},
+    plugins: [
+      (ajv: Ajv) => {
+        expectType<Ajv>(ajv)
+        return ajv
+      },
+      (ajv: Ajv, options: unknown) => {
+        expectType<Ajv>(ajv)
+        expectType<unknown>(options)
+        return ajv
+      }
+    ]
+  }
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, compilerFactoryParams])
+
   const compiler = factory({}, {
+    customOptions: {},
     plugins: [
       (ajv) => {
-        expectType<import('ajv').default>(ajv)
+        expectType<Ajv>(ajv)
         return ajv
       },
       (ajv, options) => {
-        expectType<import('ajv').default>(ajv)
+        expectType<Ajv>(ajv)
         expectType<unknown>(options)
         return ajv
-      },
-      [
-        (ajv) => {
-          expectType<import('ajv').default>(ajv)
-          return ajv
-        }, ['keyword1', 'keyword2']
-      ],
-      [
-        (ajv) => {
-          expectType<import('ajv').default>(ajv)
-          return ajv
-        }, [{ key: 'value' }]
-      ],
+      }
     ]
   })
   expectAssignable<ValidatorCompiler>(compiler)
+}
+// Compiler factory should allow both signatures (mode: JTD and mode omitted)
+{
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, {}])
+
+  const ajvPlugin = (ajv: Ajv): Ajv => {
+    expectType<Ajv>(ajv)
+    return ajv
+  }
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, { plugins: [ajvPlugin] }])
+
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, {
+    mode: 'JTD',
+    customOptions: {
+      removeAdditional: 'all'
+    },
+    plugins: [ajvPlugin]
+  }])
+
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, {
+    mode: 'JTD',
+    customOptions: {
+      removeAdditional: 'all'
+    },
+    plugins: [[ajvPlugin, ['string1', 'string2']]]
+  }])
+
+  expectAssignable<Parameters<BuildCompilerFromPool>>([{}, {
+    plugins: [
+      ajvPlugin,
+      (ajv: Ajv, options: unknown): Ajv => {
+        expectType<Ajv>(ajv)
+        expectType<unknown>(options)
+        return ajv
+      },
+      [ajvPlugin, ['keyword1', 'keyword2']],
+      [ajvPlugin, [{ key: 'value' }]],
+    ]
+  }])
 }
