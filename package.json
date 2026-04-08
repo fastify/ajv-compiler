@@ -69,7 +69,7 @@
     "ajv-merge-patch": "^5.0.1",
     "c8": "^11.0.0",
     "cronometro": "^6.0.2",
-    "eslint": "^9.17.0",
+    "eslint": "^10.2.0",
     "fastify": "^5.0.0",
     "neostandard": "^0.13.0",
     "require-from-string": "^2.0.2",
