@@ -33,7 +33,7 @@ import type Ajv from 'ajv'
     {},
     {
       onCreate (ajv) {
-        expect(ajv).type.toBe<import('ajv').default>()
+        expect(ajv).type.toBe<Ajv>()
       }
     }
   )
@@ -46,8 +46,8 @@ import type Ajv from 'ajv'
 
 const reader = StandaloneValidator({
   readMode: true,
-  restoreFunction: (route: RouteDefinition) => {
-    expect(route).type.toBeAssignableTo<RouteDefinition>()
+  restoreFunction: (route) => {
+    expect(route).type.toBe<RouteDefinition>()
     return {} as ValidateFunction
   }
 })
@@ -55,9 +55,9 @@ expect(reader).type.toBeAssignableTo<ValidatorFactory>()
 
 const writer = StandaloneValidator({
   readMode: false,
-  storeFunction: (route: RouteDefinition, code: string) => {
-    expect(route).type.toBeAssignableTo<RouteDefinition>()
-    expect(code).type.toBeAssignableTo<string>()
+  storeFunction: (route, code: string) => {
+    expect(route).type.toBe<RouteDefinition>()
+    expect(code).type.toBe<string>()
   }
 })
 expect(writer).type.toBeAssignableTo<ValidatorFactory>()
@@ -199,7 +199,7 @@ expect(AjvReference).type.toBe<Symbol>()
 
   const compiler = factory(schemaMap)
   expect(compiler).type.toBeAssignableTo<ValidatorCompiler>()
-  expect(compiler(endpointSchema)).type.toBeAssignableTo<Function>()
+  expect(compiler(endpointSchema)).type.toBe<AnyValidateFunction>()
 }
 
 {
@@ -245,7 +245,7 @@ expect(AjvReference).type.toBe<Symbol>()
 
   const compiler = factory(schemaMap)
   expect(compiler).type.toBeAssignableTo<ValidatorCompiler>()
-  expect(compiler(endpointSchema)).type.toBe<AnyValidateFunction<any>>()
+  expect(compiler(endpointSchema)).type.toBe<AnyValidateFunction>()
 }
 
 // Plugins
@@ -294,58 +294,51 @@ expect(AjvReference).type.toBe<Symbol>()
 
 // Compiler factory should allow both signatures (mode: JTD and mode omitted)
 {
-  expect([{}, {}] as Parameters<BuildCompilerFromPool>).type.toBeAssignableTo<
-    Parameters<BuildCompilerFromPool>
-  >()
-
+  expect<BuildCompilerFromPool>().type.toBeCallableWith({}, {})
   const ajvPlugin = (ajv: Ajv): Ajv => {
     expect(ajv).type.toBe<Ajv>()
     return ajv
   }
-  expect([
-    {},
-    { plugins: [ajvPlugin] }
-  ] as Parameters<BuildCompilerFromPool>).type.toBeAssignableTo<
-    Parameters<BuildCompilerFromPool>
-  >()
+  expect<BuildCompilerFromPool>()
+    .type.toBeCallableWith(
+      {},
+      { plugins: [ajvPlugin] }
+    )
 
-  expect([
-    {},
-    {
-      mode: 'JTD',
-      customOptions: { removeAdditional: 'all' },
-      plugins: [ajvPlugin]
-    }
-  ] as Parameters<BuildCompilerFromPool>).type.toBeAssignableTo<
-    Parameters<BuildCompilerFromPool>
-  >()
+  expect<BuildCompilerFromPool>()
+    .type.toBeCallableWith(
+      {},
+      {
+        mode: 'JTD',
+        customOptions: { removeAdditional: 'all' },
+        plugins: [ajvPlugin]
+      }
+    )
 
-  expect([
-    {},
-    {
-      mode: 'JTD',
-      customOptions: { removeAdditional: 'all' },
-      plugins: [[ajvPlugin, ['string1', 'string2']]]
-    }
-  ] as Parameters<BuildCompilerFromPool>).type.toBeAssignableTo<
-    Parameters<BuildCompilerFromPool>
-  >()
+  expect<BuildCompilerFromPool>()
+    .type.toBeCallableWith(
+      {},
+      {
+        mode: 'JTD',
+        customOptions: { removeAdditional: 'all' },
+        plugins: [[ajvPlugin, ['string1', 'string2']]]
+      }
+    )
 
-  expect([
-    {},
-    {
-      plugins: [
-        ajvPlugin,
-        (ajv: Ajv, options: unknown): Ajv => {
-          expect(ajv).type.toBe<Ajv>()
-          expect(options).type.toBe<unknown>()
-          return ajv
-        },
-        [ajvPlugin, ['keyword1', 'keyword2']],
-        [ajvPlugin, [{ key: 'value' }]]
-      ]
-    }
-  ] as Parameters<BuildCompilerFromPool>).type.toBeAssignableTo<
-    Parameters<BuildCompilerFromPool>
-  >()
+  expect<BuildCompilerFromPool>()
+    .type.toBeCallableWith(
+      {},
+      {
+        plugins: [
+          ajvPlugin,
+          (ajv: Ajv, options: unknown): Ajv => {
+            expect(ajv).type.toBe<Ajv>()
+            expect(options).type.toBe<unknown>()
+            return ajv
+          },
+          [ajvPlugin, ['keyword1', 'keyword2']],
+          [ajvPlugin, [{ key: 'value' }]]
+        ]
+      }
+    )
 }
