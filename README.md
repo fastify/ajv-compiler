@@ -81,7 +81,7 @@ const app = fastify({
 
 ### Fastify with JTD
 
-The [JSON Type Definition](https://jsontypedef.com/) feature is supported by AJV v8.x and you can benefit from it in your Fastify application.
+The [JSON Type Definition](https://www.rfc-editor.org/rfc/rfc8927.html) feature is supported by AJV v8.x and you can benefit from it in your Fastify application.
 
 With Fastify v3.20.x and higher, you can use the `@fastify/ajv-compiler` module to load JSON Type Definitions like so:
 
