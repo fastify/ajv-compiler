@@ -4,12 +4,14 @@ import { expect } from 'tstyche'
 import AjvCompiler, {
   AjvReference,
   ValidatorFactory,
+  SerializerFactory,
   StandaloneValidator,
   RouteDefinition,
   ErrorObject,
   BuildCompilerFromPool,
   BuildSerializerFromPool,
-  ValidatorCompiler
+  ValidatorCompiler,
+  SerializerCompiler
 } from '..'
 import type Ajv from 'ajv'
 
@@ -341,4 +343,34 @@ expect(AjvReference).type.toBe<Symbol>()
         ]
       }
     )
+}
+
+// ValidatorCompiler and SerializerCompiler types
+{
+  const validatorFactory = AjvCompiler()
+  expect(validatorFactory).type.toBeAssignableTo<ValidatorFactory>()
+  const validatorCompiler = validatorFactory({}, {})
+  expect(validatorCompiler).type.toBeAssignableTo<ValidatorCompiler>()
+
+  const routeDef: RouteDefinition = {
+    schema: { type: 'string' },
+    method: 'GET',
+    url: '/test',
+    httpPart: AjvCompiler.HttpParts.Body,
+    httpStatus: '200'
+  }
+  const validate = validatorCompiler(routeDef)
+  expect(validate).type.toBe<AnyValidateFunction>()
+
+  const minimalRouteDef: RouteDefinition = {
+    schema: { type: 'number' }
+  }
+  expect(validatorCompiler(minimalRouteDef)).type.toBe<AnyValidateFunction>()
+
+  const serializerFactory = AjvCompiler({ jtdSerializer: true })
+  expect(serializerFactory).type.toBeAssignableTo<SerializerFactory>()
+  const serializerCompiler = serializerFactory({}, {})
+  expect(serializerCompiler).type.toBeAssignableTo<SerializerCompiler>()
+  const serialize = serializerCompiler(routeDef)
+  expect(serialize).type.toBe<(data: unknown) => string>()
 }
