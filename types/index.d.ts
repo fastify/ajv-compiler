@@ -1,13 +1,13 @@
 import _ajv, { AnySchema, Options as AjvOptions, ValidateFunction, Plugin } from 'ajv'
-import AjvJTD, { JTDOptions } from 'ajv/dist/jtd'
+import type { JTDOptions } from 'ajv/dist/jtd'
 import type { Options, ErrorObject } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
 
 type Ajv = _ajv
 type AjvSerializerGenerator = typeof AjvCompiler
 
-type AjvJTDCompile = AjvJTD['compileSerializer']
-type AjvCompile = (schema: AnySchema, _meta?: boolean) => AnyValidateFunction
+type AjvJTDCompile = (routeDefinition: AjvCompiler.RouteDefinition) => (data: unknown) => string
+type AjvCompile = (routeDefinition: AjvCompiler.RouteDefinition) => AnyValidateFunction
 
 type SharedCompilerOptions = {
   onCreate?: (ajvInstance: Ajv) => void;
@@ -52,10 +52,11 @@ declare namespace AjvCompiler {
   }
 
   export type RouteDefinition = {
-    method: string,
-    url: string,
-    httpPart: HttpParts,
-    schema?: unknown,
+    schema: AnySchema,
+    method?: string,
+    url?: string,
+    httpPart?: HttpParts | string,
+    httpStatus?: string,
   }
 
   export type StandaloneRestoreFunction = (opts: RouteDefinition) => ValidateFunction
@@ -74,9 +75,11 @@ declare namespace AjvCompiler {
 
   export type StandaloneOptions = StandaloneOptionsReadModeOn | StandaloneOptionsReadModeOff
 
-  export type ValidatorFactory = BuildCompilerFromPool | BuildSerializerFromPool
+  export type ValidatorFactory = BuildCompilerFromPool
+  export type SerializerFactory = BuildSerializerFromPool
 
   export type ValidatorCompiler = ReturnType<ValidatorFactory>
+  export type SerializerCompiler = ReturnType<SerializerFactory>
 
   export { StandaloneValidator }
 
